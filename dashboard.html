@@ -12,9 +12,7 @@
   <style>
     :root { 
         --rp-primary: #2563eb; 
-        --rp-secondary: #475569;
-        --rp-success: #10b981;
-        --rp-bg: #f1f5f9; 
+        --rp-bg: #f8fafc; 
         --rp-sidebar: #0f172a; 
     }
     
@@ -79,7 +77,12 @@
         <i class="fa-solid fa-city welcome-bg"></i>
     </div>
     
-    <p id="statusMessage" class="small text-muted mb-3"></p>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <p id="statusMessage" class="small text-muted mb-0"></p>
+        <button class="btn btn-sm btn-outline-primary" onclick="loadDashboard()">
+            <i class="fa-solid fa-rotate me-1"></i> Refresh
+        </button>
+    </div>
 
     <div class="row g-4 mb-4">
       <div class="col-md-3">
@@ -155,7 +158,6 @@
     const auth = getAuth(app);
     let currentUserUID = null;
 
-    // WEB APP URL (Same as Reports Page)
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
 
     onAuthStateChanged(auth, (user) => {
@@ -190,23 +192,21 @@
         if(!currentUserUID) return;
         $('statusMessage').innerText = 'Syncing data...';
         
-        // 1. Fetch Data (Removed 't' param to match working Reports page)
+        // Fetch Data
         const tenantsRes = await apiFetch({ action: 'getTenants' });
         const paymentsRes = await apiFetch({ action: 'getPayments' });
         
         let tenants = Array.isArray(tenantsRes) ? tenantsRes : (tenantsRes.data || []);
         let payments = Array.isArray(paymentsRes) ? paymentsRes : (paymentsRes.data || []);
         
-        // --- GLOBAL DEMO MODE: No Filtering ---
-        // tenants = tenants.filter(t => t.OwnerID === currentUserUID); // DISABLED
+        $('statusMessage').innerText = `Last updated: ${new Date().toLocaleTimeString()}`;
 
-        $('statusMessage').innerText = '';
-
-        // 2. Calculate Totals (Using Capitalized Keys matching your CSV)
-        const totalRent = tenants.reduce((sum, t) => sum + Number(t.Rent || t.Amount || 0), 0);
+        // 2. Calculate Totals
+        // Note: Looking for 'Rent' (from tenants) and 'Amount' (from payments)
+        const totalRent = tenants.reduce((sum, t) => sum + Number(t.Rent || 0), 0);
         const totalCollected = payments.reduce((sum, p) => sum + Number(p.Amount || 0), 0);
 
-        // 3. Update UI
+        // 3. Update UI Metrics
         $('totalTenants').innerText = tenants.length;
         $('totalRent').innerText = money(totalRent);
         $('totalPayments').innerText = payments.length;
@@ -223,15 +223,15 @@
             return;
         }
         
-        // Sort by Date (Handling standard date strings)
+        // Sort by Date
         const sorted = [...payments].sort((a, b) => new Date(b.Date) - new Date(a.Date));
 
         list.innerHTML = sorted.slice(0, 6).map(p => {
-            // Fix: Use 'TenantName' or 'Name' (Capitalized)
-            const name = String(p.TenantName || p.Name || 'Unknown');
+            // FIX: Explicitly looking for "M-Pesa Name" based on your Google Sheet
+            const name = String(p['M-Pesa Name'] || p.TenantName || p.Name || 'Unknown');
             const initial = name.charAt(0).toUpperCase();
             
-            // Fix: Use 'Date' (Capitalized)
+            // Format Date
             let dStr = p.Date || 'Today';
             try { dStr = new Date(dStr).toLocaleDateString('en-GB', {month:'short', day:'numeric'}); } catch(e){}
 
@@ -255,7 +255,6 @@
         
         payments.forEach(p => {
             try {
-                // Fix: Use 'Date' and 'Amount' (Capitalized)
                 const d = new Date(p.Date);
                 const key = d.toLocaleString('default', { month: 'short' });
                 monthlyData[key] = (monthlyData[key] || 0) + Number(p.Amount || 0);
