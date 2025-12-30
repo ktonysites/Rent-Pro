@@ -15,7 +15,6 @@
         --rp-bg: #f8fafc; 
         --rp-sidebar: #0f172a; 
     }
-    
     body { background: var(--rp-bg); font-family: 'Inter', system-ui, sans-serif; color: #334155; }
 
     /* SIDEBAR */
@@ -85,38 +84,10 @@
     </div>
 
     <div class="row g-4 mb-4">
-      <div class="col-md-3">
-        <div class="card-hero">
-            <div class="d-flex justify-content-between align-items-start">
-                <div><div class="card-label">Tenants</div><h3 id="totalTenants" class="card-value">0</h3></div>
-                <div class="icon-box bg-blue-light"><i class="fa-solid fa-users"></i></div>
-            </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card-hero">
-            <div class="d-flex justify-content-between align-items-start">
-                <div><div class="card-label">Expected Rent</div><h3 id="totalRent" class="card-value">0</h3></div>
-                <div class="icon-box bg-purple-light"><i class="fa-solid fa-bullseye"></i></div>
-            </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card-hero">
-            <div class="d-flex justify-content-between align-items-start">
-                <div><div class="card-label">Collected</div><h3 id="totalCollected" class="card-value text-success">0</h3></div>
-                <div class="icon-box bg-green-light"><i class="fa-solid fa-wallet"></i></div>
-            </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card-hero">
-            <div class="d-flex justify-content-between align-items-start">
-                <div><div class="card-label">Transactions</div><h3 id="totalPayments" class="card-value">0</h3></div>
-                <div class="icon-box bg-orange-light"><i class="fa-solid fa-receipt"></i></div>
-            </div>
-        </div>
-      </div>
+      <div class="col-md-3"><div class="card-hero"><div class="d-flex justify-content-between"><div><div class="card-label">Tenants</div><h3 id="totalTenants" class="card-value">0</h3></div><div class="icon-box bg-blue-light"><i class="fa-solid fa-users"></i></div></div></div></div>
+      <div class="col-md-3"><div class="card-hero"><div class="d-flex justify-content-between"><div><div class="card-label">Expected Rent</div><h3 id="totalRent" class="card-value">0</h3></div><div class="icon-box bg-purple-light"><i class="fa-solid fa-bullseye"></i></div></div></div></div>
+      <div class="col-md-3"><div class="card-hero"><div class="d-flex justify-content-between"><div><div class="card-label">Collected</div><h3 id="totalCollected" class="card-value text-success">0</h3></div><div class="icon-box bg-green-light"><i class="fa-solid fa-wallet"></i></div></div></div></div>
+      <div class="col-md-3"><div class="card-hero"><div class="d-flex justify-content-between"><div><div class="card-label">Transactions</div><h3 id="totalPayments" class="card-value">0</h3></div><div class="icon-box bg-orange-light"><i class="fa-solid fa-receipt"></i></div></div></div></div>
     </div>
 
     <div class="row g-4">
@@ -157,13 +128,11 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     let currentUserUID = null;
-
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
 
     onAuthStateChanged(auth, (user) => {
-        if (!user) {
-            window.location.href = "index.html";
-        } else {
+        if (!user) { window.location.href = "index.html"; } 
+        else {
             currentUserUID = user.uid;
             if(user.email) {
                 const namePart = user.email.split('@')[0];
@@ -192,21 +161,23 @@
         if(!currentUserUID) return;
         $('statusMessage').innerText = 'Syncing data...';
         
-        // Fetch Data
         const tenantsRes = await apiFetch({ action: 'getTenants' });
         const paymentsRes = await apiFetch({ action: 'getPayments' });
         
         let tenants = Array.isArray(tenantsRes) ? tenantsRes : (tenantsRes.data || []);
         let payments = Array.isArray(paymentsRes) ? paymentsRes : (paymentsRes.data || []);
-        
+
+        // --- DEBUGGING: ALERT ONCE IF DATA FOUND ---
+        if(payments.length > 0) {
+            // Check first item to see keys
+            console.log("PAYMENT DATA KEYS:", Object.keys(payments[0])); 
+        }
+
         $('statusMessage').innerText = `Last updated: ${new Date().toLocaleTimeString()}`;
 
-        // 2. Calculate Totals
-        // Note: Looking for 'Rent' (from tenants) and 'Amount' (from payments)
-        const totalRent = tenants.reduce((sum, t) => sum + Number(t.Rent || 0), 0);
-        const totalCollected = payments.reduce((sum, p) => sum + Number(p.Amount || 0), 0);
+        const totalRent = tenants.reduce((sum, t) => sum + Number(t.Rent || t.rent || t.Amount || 0), 0);
+        const totalCollected = payments.reduce((sum, p) => sum + Number(p.Amount || p.amount || 0), 0);
 
-        // 3. Update UI Metrics
         $('totalTenants').innerText = tenants.length;
         $('totalRent').innerText = money(totalRent);
         $('totalPayments').innerText = payments.length;
@@ -214,6 +185,30 @@
 
         renderChart(payments);
         renderRecentActivity(payments);
+    }
+
+    // --- SMART NAME FINDER ---
+    function findName(p) {
+        // 1. Try known specific keys from your sheet
+        if (p['M-Pesa Name']) return p['M-Pesa Name'];
+        if (p['M-PESA Name']) return p['M-PESA Name'];
+        if (p['TenantName']) return p['TenantName'];
+        if (p['Name']) return p['Name'];
+
+        // 2. Fuzzy Search: Check ALL keys for something containing "Name"
+        const keys = Object.keys(p);
+        for (const k of keys) {
+            if (k.toLowerCase().includes('name') && p[k]) return p[k];
+        }
+        return 'Unknown';
+    }
+
+    // --- SMART DATE FINDER ---
+    function findDate(p) {
+        if (p['Date']) return p['Date'];
+        if (p['date']) return p['date'];
+        if (p['Timestamp']) return p['Timestamp'];
+        return null;
     }
 
     function renderRecentActivity(payments) {
@@ -224,16 +219,19 @@
         }
         
         // Sort by Date
-        const sorted = [...payments].sort((a, b) => new Date(b.Date) - new Date(a.Date));
+        const sorted = [...payments].sort((a, b) => new Date(findDate(b)) - new Date(findDate(a)));
 
         list.innerHTML = sorted.slice(0, 6).map(p => {
-            // FIX: Explicitly looking for "M-Pesa Name" based on your Google Sheet
-            const name = String(p['M-Pesa Name'] || p.TenantName || p.Name || 'Unknown');
+            // Use Smart Finders
+            const name = findName(p);
             const initial = name.charAt(0).toUpperCase();
             
-            // Format Date
-            let dStr = p.Date || 'Today';
+            // Handle Date
+            let dStr = findDate(p) || 'Today';
             try { dStr = new Date(dStr).toLocaleDateString('en-GB', {month:'short', day:'numeric'}); } catch(e){}
+
+            // Handle Amount
+            const amount = p.Amount || p.amount || 0;
 
             return `
             <li class="activity-item">
@@ -244,7 +242,7 @@
                         <div class="text-muted" style="font-size:0.75rem">${dStr}</div>
                     </div>
                 </div>
-                <div class="fw-bold text-success">+${money(p.Amount || 0)}</div>
+                <div class="fw-bold text-success">+${money(amount)}</div>
             </li>`;
         }).join('');
     }
@@ -255,9 +253,12 @@
         
         payments.forEach(p => {
             try {
-                const d = new Date(p.Date);
-                const key = d.toLocaleString('default', { month: 'short' });
-                monthlyData[key] = (monthlyData[key] || 0) + Number(p.Amount || 0);
+                const dateVal = findDate(p);
+                if(dateVal) {
+                    const d = new Date(dateVal);
+                    const key = d.toLocaleString('default', { month: 'short' });
+                    monthlyData[key] = (monthlyData[key] || 0) + Number(p.Amount || p.amount || 0);
+                }
             } catch(e) {}
         });
 
