@@ -383,10 +383,12 @@
         let payments = Array.isArray(pData) ? pData : (pData.data || []);
         let expenses = Array.isArray(eData) ? eData : (eData.data || []);
 
-        // Filter by Owner
-        tenants = tenants.filter(t => t.OwnerID === currentUserUID);
-        payments = payments.filter(p => p.OwnerID === currentUserUID);
-        expenses = expenses.filter(e => e.OwnerID === currentUserUID);
+        // --- DEMO MODE: FILTERING DISABLED ---
+        // I have commented out these lines so ALL users see ALL data.
+        
+        // tenants = tenants.filter(t => t.OwnerID === currentUserUID);
+        // payments = payments.filter(p => p.OwnerID === currentUserUID);
+        // expenses = expenses.filter(e => e.OwnerID === currentUserUID);
 
         // SAVE GLOBAL VARS FOR EXPORT
         globalTenants = tenants;
@@ -420,7 +422,7 @@
         renderMethodChart(monthlyPayments);
     }
 
-    // --- UPDATED EXPORT LOGIC ---
+    // --- EXPORT LOGIC ---
     window.exportData = function(type) {
         let data = [];
         let filename = 'export.csv';
@@ -430,23 +432,15 @@
             if(globalTenants.length === 0) return alert("No tenant data available to export.");
             filename = 'RentPro_Tenants.csv';
             
-            // CHANGED HEADERS: Added NationalID, DueDate, and renamed Unit to House
             headers = ['Name', 'House', 'Rent', 'Phone', 'NationalID', 'DueDate', 'Status']; 
             
-            // UPDATED MAPPING to capture all details from profile page
             data = globalTenants.map(t => ({
                 Name:       t.Name || t.name || t.TenantName || '',
-                
-                // Maps to 'House', 'Unit', or 'UnitNo'
                 House:      t.House || t.house || t.Unit || t.unit || t.UnitNo || '', 
-                
                 Rent:       t.Rent || t.rent || t.Amount || 0,
                 Phone:      t.Phone || t.phone || t.Contact || t.PhoneNumber || t.mobile || '',
-                
-                // New Details
                 NationalID: t.NationalID || t.natID || t.IDNumber || '-',
                 DueDate:    t.DueDate || t["Due Date"] || t.due_date || '5th',
-                
                 Status:     t.Status || t.status || 'Active'
             }));
 
