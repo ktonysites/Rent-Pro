@@ -3,133 +3,309 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RentPro — Reports</title>
+  <title>RentPro — Financial Intelligence</title>
   
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    :root { --rp-primary: #1d4ed8; --rp-light: #f9fafb; --rp-dark: #111827; }
-    body { background: var(--rp-light); font-family: 'Segoe UI', system-ui, sans-serif; }
+    :root { 
+        --rp-primary: #2563eb; 
+        --rp-secondary: #475569;
+        --rp-success: #10b981;
+        --rp-danger: #ef4444;
+        --rp-bg: #f1f5f9; 
+        --rp-sidebar: #0f172a; 
+    }
     
-    /* SIDEBAR (Same as Dashboard) */
-    .sidebar { width: 250px; min-height: 100vh; background: var(--rp-dark); color: #fff; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; }
-    .nav-link { color: #9ca3af; padding: 14px 25px; display: flex; align-items: center; gap: 12px; text-decoration: none; }
-    .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.05); color: #fff; }
-    .content { margin-left: 250px; padding: 30px; }
+    body { 
+        background: var(--rp-bg); 
+        font-family: 'Inter', system-ui, sans-serif; 
+        color: #334155;
+        overflow-x: hidden;
+    }
     
-    /* REPORT CARDS */
-    .report-card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); text-align: center; height: 100%; }
-    .card-title-sm { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: 600; margin-bottom: 10px; }
-    .card-value { font-size: 1.8rem; font-weight: 800; color: #111827; margin-bottom: 5px; }
+    /* --- SIDEBAR --- */
+    .sidebar { 
+        width: 260px; min-height: 100vh; background: var(--rp-sidebar); 
+        color: #fff; position: fixed; top: 0; left: 0; 
+        display: flex; flex-direction: column; z-index: 1000;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+    }
+    .sidebar-header { border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-link { 
+        color: #94a3b8; padding: 16px 28px; display: flex; align-items: center; gap: 14px; 
+        text-decoration: none; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent;
+    }
+    .nav-link:hover { background: rgba(255,255,255,0.03); color: #fff; padding-left: 32px; }
+    .nav-link.active { 
+        background: rgba(37, 99, 235, 0.1); color: #fff; 
+        border-left-color: var(--rp-primary); 
+        background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, transparent 100%);
+    }
+    .content { margin-left: 260px; padding: 40px; }
     
-    /* BORDERS FOR CARDS */
-    .border-b-blue { border-bottom: 4px solid #3b82f6; }
-    .border-b-green { border-bottom: 4px solid #10b981; }
-    .border-b-red { border-bottom: 4px solid #ef4444; }
-    .border-b-cyan { border-bottom: 4px solid #06b6d4; }
-    .border-b-purple { border-bottom: 4px solid #8b5cf6; }
+    /* --- CARDS & METRICS --- */
+    .report-card { 
+        background: white; border-radius: 16px; padding: 28px; 
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        text-align: left; height: 100%; border: 1px solid #e2e8f0;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .report-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
+    
+    .card-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.2px; color: #64748b; font-weight: 700; margin-bottom: 8px; }
+    .card-value { font-size: 2rem; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 0; }
+    .card-subtext { font-size: 0.85rem; margin-top: 8px; color: #94a3b8; }
+    
+    /* Top Border Accents */
+    .accent-blue { border-top: 5px solid #3b82f6; }
+    .accent-green { border-top: 5px solid #10b981; }
+    .accent-red { border-top: 5px solid #ef4444; }
+    .accent-purple { border-top: 5px solid #8b5cf6; }
 
-    /* CHARTS */
-    .chart-box { background: white; padding: 20px; border-radius: 12px; height: 350px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+    /* --- CHARTS --- */
+    .chart-box { 
+        background: white; padding: 25px; border-radius: 16px; height: 400px; 
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;
+    }
 
-    @media (max-width: 768px) { .sidebar { display: none; } .content { margin-left: 0; } }
+    /* --- EXPORT ACTION CENTER --- */
+    .export-section-title {
+        display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+        color: #334155; font-weight: 700; letter-spacing: -0.5px;
+    }
+    .export-card {
+        background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; position: relative; overflow: hidden;
+    }
+    .export-card:hover { 
+        border-color: var(--rp-primary); 
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: translateY(-4px);
+    }
+    
+    /* Icons in export cards */
+    .icon-box {
+        width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem; margin-bottom: 15px; transition: transform 0.2s;
+    }
+    .export-card:hover .icon-box { transform: scale(1.1) rotate(5deg); }
+    
+    .bg-light-blue { background: #eff6ff; color: #3b82f6; }
+    .bg-light-green { background: #f0fdf4; color: #22c55e; }
+    .bg-light-purple { background: #f3e8ff; color: #a855f7; }
+
+    .export-bg-decor { 
+        position: absolute; right: -20px; bottom: -20px; font-size: 6rem; 
+        opacity: 0.03; transform: rotate(-15deg); transition: opacity 0.3s;
+    }
+    .export-card:hover .export-bg-decor { opacity: 0.1; }
+
+    /* Buttons */
+    .btn-refresh {
+        background: white; border: 1px solid #cbd5e1; color: #475569; font-weight: 600;
+        padding: 10px 20px; border-radius: 30px; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .btn-refresh:hover { background: #f8fafc; border-color: #94a3b8; color: #1e293b; transform: translateY(-1px); }
+
+    /* Mobile */
+    @media (max-width: 768px) { .sidebar { display: none; } .content { margin-left: 0; padding: 20px; } }
   </style>
 </head>
 <body>
 
   <div class="sidebar">
     <div class="sidebar-header p-4">
-      <a href="#" class="text-white text-decoration-none h4 fw-bold"><i class="fa-solid fa-building-user me-2"></i> RentPro</a>
+      <a href="#" class="text-white text-decoration-none h4 fw-bold d-flex align-items-center">
+        <div class="bg-primary rounded-3 d-flex align-items-center justify-content-center me-2" style="width:40px; height:40px;">
+            <i class="fa-solid fa-building"></i>
+        </div>
+        RentPro
+      </a>
     </div>
     <nav class="mt-2">
-      <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-      <a href="tenants.html" class="nav-link"><i class="fa-solid fa-users"></i> Tenants</a>
-      <a href="payments.html" class="nav-link"><i class="fa-solid fa-money-bill-wave"></i> Payments</a>
-      <a href="pay.html" class="nav-link"><i class="fa-solid fa-credit-card"></i> Pay Rent</a>
-      <a href="expenses.html" class="nav-link"><i class="fa-solid fa-receipt"></i> Expenses</a>
-      <a href="reports.html" class="nav-link active" style="background: rgba(59, 130, 246, 0.1); color: #fff; border-left-color: var(--rp-accent);"><i class="fa-solid fa-chart-column"></i> Reports</a>
-      <a href="#" class="nav-link" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie me-2"></i> Dashboard</a>
+      <a href="tenants.html" class="nav-link"><i class="fa-solid fa-users me-2"></i> Tenants</a>
+      <a href="payments.html" class="nav-link"><i class="fa-solid fa-money-bill-wave me-2"></i> Payments</a>
+      <a href="pay.html" class="nav-link"><i class="fa-solid fa-credit-card me-2"></i> Pay Rent</a>
+      <a href="expenses.html" class="nav-link"><i class="fa-solid fa-receipt me-2"></i> Expenses</a>
+      <a href="reports.html" class="nav-link active"><i class="fa-solid fa-chart-column me-2"></i> Reports</a>
+      <div style="flex-grow:1"></div>
+      <a href="#" class="nav-link text-danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a>
     </nav>
   </div>
 
   <main class="content">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    
+    <div class="d-flex justify-content-between align-items-end mb-5">
       <div>
-        <h2 class="fw-bold mb-1">Financial Report</h2>
-        <p class="text-muted" id="reportMonth">Loading data...</p>
+        <h6 class="text-uppercase text-muted fw-bold small mb-2">Financial Intelligence</h6>
+        <h2 class="fw-bold mb-1 text-dark">Reports & Analytics</h2>
+        <p class="text-secondary mb-0" id="reportMonth">Retrieving latest financial data...</p>
       </div>
-      <button class="btn btn-primary" onclick="loadReports()">
-        <i class="fa-solid fa-rotate me-2"></i> Refresh Data
+      <button class="btn-refresh" onclick="loadReports()">
+        <i class="fa-solid fa-rotate me-2"></i> Sync Data
       </button>
     </div>
 
-    <h5 class="fw-bold text-primary mb-3 border-start border-4 border-primary ps-3">Monthly Performance (This Month)</h5>
+    <div class="mb-4 d-flex align-items-center">
+        <i class="fa-solid fa-calendar-day text-primary me-2"></i>
+        <h5 class="fw-bold text-dark m-0">This Month's Performance</h5>
+    </div>
     
-    <div class="row g-4 mb-4">
+    <div class="row g-4 mb-5">
       <div class="col-md-3">
-        <div class="report-card border-b-blue">
-          <div class="card-title-sm">Expected Rent</div>
+        <div class="report-card accent-blue">
+          <div class="card-label">Expected Rent</div>
           <div id="expectedVal" class="card-value">...</div>
+          <div class="card-subtext">Total rent roll value</div>
         </div>
       </div>
       <div class="col-md-3">
-        <div class="report-card border-b-green">
-          <div class="card-title-sm">Collected Rent</div>
+        <div class="report-card accent-green">
+          <div class="card-label">Collected</div>
           <div id="collectedVal" class="card-value text-success">...</div>
+          <div class="card-subtext">Cash in bank</div>
         </div>
       </div>
       <div class="col-md-3">
-        <div class="report-card border-b-red">
-          <div class="card-title-sm">Outstanding</div>
+        <div class="report-card accent-red">
+          <div class="card-label">Outstanding</div>
           <div id="arrearsVal" class="card-value text-danger">...</div>
+          <div class="card-subtext">Unpaid invoices</div>
         </div>
       </div>
       <div class="col-md-3">
-        <div class="report-card border-b-cyan">
-          <div class="card-title-sm">Collection Rate</div>
-          <div id="rateVal" class="card-value text-info">...%</div>
+        <div class="report-card accent-purple">
+          <div class="card-label">Collection Rate</div>
+          <div id="rateVal" class="card-value" style="color:#8b5cf6">...%</div>
+          <div class="card-subtext">Performance metric</div>
         </div>
       </div>
     </div>
 
-    <h5 class="fw-bold text-dark mb-3 border-start border-4 border-dark ps-3">Profit & Loss Overview</h5>
+    <div class="mb-4 d-flex align-items-center">
+        <i class="fa-solid fa-scale-balanced text-dark me-2"></i>
+        <h5 class="fw-bold text-dark m-0">Profit & Loss Overview</h5>
+    </div>
     <div class="row g-4 mb-5">
          <div class="col-md-4">
-            <div class="report-card border-b-green">
-              <div class="card-title-sm">Total Revenue</div>
-              <div id="revenueVal" class="card-value text-success">...</div>
+            <div class="report-card" style="border-left: 5px solid #10b981;">
+              <div class="d-flex justify-content-between">
+                  <div>
+                    <div class="card-label">Total Revenue</div>
+                    <div id="revenueVal" class="card-value text-success">...</div>
+                  </div>
+                  <div class="icon-box bg-light-green rounded-circle" style="width:40px;height:40px;font-size:1rem;">
+                      <i class="fa-solid fa-arrow-up"></i>
+                  </div>
+              </div>
             </div>
          </div>
          <div class="col-md-4">
-            <div class="report-card border-b-red">
-              <div class="card-title-sm">Total Expenses</div>
-              <div id="expensesVal" class="card-value text-danger">...</div>
+            <div class="report-card" style="border-left: 5px solid #ef4444;">
+              <div class="d-flex justify-content-between">
+                  <div>
+                    <div class="card-label">Total Expenses</div>
+                    <div id="expensesVal" class="card-value text-danger">...</div>
+                  </div>
+                  <div class="icon-box" style="background:#fef2f2; color:#ef4444; border-radius:50%; width:40px;height:40px;font-size:1rem;">
+                      <i class="fa-solid fa-arrow-down"></i>
+                  </div>
+              </div>
             </div>
          </div>
          <div class="col-md-4">
-            <div class="report-card border-b-purple">
-              <div class="card-title-sm">Net Profit</div>
-              <div id="profitVal" class="card-value text-primary">...</div>
+            <div class="report-card" style="border-left: 5px solid #3b82f6;">
+              <div class="d-flex justify-content-between">
+                  <div>
+                    <div class="card-label">Net Profit</div>
+                    <div id="profitVal" class="card-value text-primary">...</div>
+                  </div>
+                  <div class="icon-box bg-light-blue rounded-circle" style="width:40px;height:40px;font-size:1rem;">
+                      <i class="fa-solid fa-wallet"></i>
+                  </div>
+              </div>
             </div>
          </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4 mb-5">
       <div class="col-md-6">
         <div class="chart-box">
-          <h6 class="fw-bold mb-3">Revenue vs Expenses</h6>
-          
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h6 class="fw-bold m-0 text-dark">Income vs Expense</h6>
+            <span class="badge bg-light text-dark border">This Month</span>
+          </div>
           <canvas id="profitChart"></canvas>
         </div>
       </div>
       <div class="col-md-6">
         <div class="chart-box">
-          <h6 class="fw-bold mb-3">Payment Methods</h6>
-          
+          <div class="d-flex justify-content-between align-items-center mb-4">
+             <h6 class="fw-bold m-0 text-dark">Payment Methods</h6>
+             <span class="badge bg-light text-dark border">Distribution</span>
+          </div>
           <canvas id="methodChart"></canvas>
         </div>
       </div>
+    </div>
+
+    <div class="export-section-title mt-5">
+        <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" style="width:32px; height:32px;">
+            <i class="fa-solid fa-download" style="font-size: 0.9rem;"></i>
+        </div>
+        <h4 class="m-0 fw-bold">Data Export Center</h4>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="export-card" onclick="exportData('tenants')">
+                <div class="icon-box bg-light-blue">
+                    <i class="fa-solid fa-users-viewfinder"></i>
+                </div>
+                <i class="fa-solid fa-users export-bg-decor"></i>
+                <h6 class="fw-bold text-dark">Tenant Roster</h6>
+                <p class="text-secondary small mb-3">Export all active tenants, House numbers, IDs, and rent obligations.</p>
+                <div class="d-flex align-items-center text-primary fw-bold small">
+                    Download CSV <i class="fa-solid fa-arrow-right ms-2"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="export-card" onclick="exportData('payments')">
+                <div class="icon-box bg-light-green">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                </div>
+                <i class="fa-solid fa-file-invoice export-bg-decor"></i>
+                <h6 class="fw-bold text-dark">Financial History</h6>
+                <p class="text-secondary small mb-3">Full transaction log of all rent payments collected for this account.</p>
+                <div class="d-flex align-items-center text-success fw-bold small">
+                    Download CSV <i class="fa-solid fa-arrow-right ms-2"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="export-card" onclick="exportData('expenses')">
+                <div class="icon-box bg-light-purple">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+                <i class="fa-solid fa-calculator export-bg-decor"></i>
+                <h6 class="fw-bold text-dark">Expense Report</h6>
+                <p class="text-secondary small mb-3">Detailed break-down of maintenance, utility, and operational costs.</p>
+                <div class="d-flex align-items-center text-dark fw-bold small" style="color:#a855f7 !important">
+                    Download CSV <i class="fa-solid fa-arrow-right ms-2"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="my-5 py-3 text-center text-muted small">
+        RentPro Financial System &copy; 2025
     </div>
 
   </main>
@@ -141,7 +317,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    // 1. FIREBASE CONFIG
     const firebaseConfig = {
         apiKey: "AIzaSyBwJEOW3jVBHLizWiJjT4a_Tay-2yUCZwk",
         authDomain: "rentpro-saas.firebaseapp.com",
@@ -156,26 +331,25 @@
     const auth = getAuth(app);
     let currentUserUID = null;
 
-    // 2. WEB APP URL (Google Script)
+    // GLOBAL STORAGE FOR EXPORTS
+    let globalTenants = [];
+    let globalPayments = [];
+    let globalExpenses = [];
+
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
 
-    // 3. AUTHENTICATION CHECK
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUserUID = user.uid;
-            
-            // Set Date Title
             const date = new Date();
             const monthName = date.toLocaleString('default', { month: 'long', year: 'numeric' });
-            document.getElementById('reportMonth').innerText = `Financial Analysis for ${monthName}`;
-            
-            window.loadReports(); // Start loading
+            document.getElementById('reportMonth').innerText = `Data for ${monthName}`;
+            window.loadReports(); 
         } else {
             window.location.href = "index.html";
         }
     });
 
-    // 4. UTILITIES
     const money = (amount) => {
         return new Intl.NumberFormat('en-KE', { 
             style: 'currency', currency: 'KES', minimumFractionDigits: 0 
@@ -192,40 +366,39 @@
         } catch (e) { console.error(e); return []; }
     }
 
-    // 5. GLOBAL CHART VARS
     let profitChart = null;
     let methodChart = null;
 
-    // 6. MAIN LOGIC
     window.loadReports = async function() {
         if(!currentUserUID) return;
+        
+        // Show loading state
+        document.getElementById('expectedVal').innerText = "...";
 
-        // Fetch ALL Data
         const tData = await apiFetch({ action: 'getTenants' });
         const pData = await apiFetch({ action: 'getPayments' });
         const eData = await apiFetch({ action: 'getExpenses' });
         
-        // Normalize Data
         let tenants = Array.isArray(tData) ? tData : (tData.data || []);
         let payments = Array.isArray(pData) ? pData : (pData.data || []);
         let expenses = Array.isArray(eData) ? eData : (eData.data || []);
 
-        // 🔥 CRITICAL: FILTER BY OWNER ID 🔥
+        // Filter by Owner
         tenants = tenants.filter(t => t.OwnerID === currentUserUID);
-        // Note: For older data without ID, we assume it's NOT yours to be safe, 
-        // unless you want to show everything. Here we filter strictly.
-        // Make sure you updated payments/expenses sheets with IDs!
         payments = payments.filter(p => p.OwnerID === currentUserUID);
         expenses = expenses.filter(e => e.OwnerID === currentUserUID);
 
-        // --- FILTER FOR THIS MONTH ---
+        // SAVE GLOBAL VARS FOR EXPORT
+        globalTenants = tenants;
+        globalPayments = payments;
+        globalExpenses = expenses;
+
         const today = new Date();
-        const currentMonthPrefix = today.toISOString().slice(0, 7); // "2023-12"
+        const currentMonthPrefix = today.toISOString().slice(0, 7); 
 
         const monthlyPayments = payments.filter(p => p.Date && p.Date.startsWith(currentMonthPrefix));
         const monthlyExpenses = expenses.filter(e => e.date && e.date.startsWith(currentMonthPrefix));
 
-        // --- CALCULATIONS ---
         const totalExpected = tenants.reduce((sum, t) => sum + Number(t.Rent || 0), 0);
         const totalCollected = monthlyPayments.reduce((sum, p) => sum + Number(p.Amount || 0), 0);
         const totalExpenseCost = monthlyExpenses.reduce((sum, e) => sum + Number(e.amount || 0), 0);
@@ -234,7 +407,6 @@
         const collectionRate = totalExpected > 0 ? Math.round((totalCollected / totalExpected) * 100) : 0;
         const netProfit = totalCollected - totalExpenseCost;
 
-        // --- UPDATE UI ---
         document.getElementById('expectedVal').innerText = money(totalExpected);
         document.getElementById('collectedVal').innerText = money(totalCollected);
         document.getElementById('arrearsVal').innerText = money(totalArrears);
@@ -244,16 +416,98 @@
         document.getElementById('expensesVal').innerText = money(totalExpenseCost);
         document.getElementById('profitVal').innerText = money(netProfit);
 
-        // --- RENDER CHARTS ---
         renderProfitChart(totalCollected, totalExpenseCost);
         renderMethodChart(monthlyPayments);
     }
 
-    // --- CHART 1: Profit vs Expense ---
+    // --- UPDATED EXPORT LOGIC ---
+    window.exportData = function(type) {
+        let data = [];
+        let filename = 'export.csv';
+        let headers = [];
+
+        if (type === 'tenants') {
+            if(globalTenants.length === 0) return alert("No tenant data available to export.");
+            filename = 'RentPro_Tenants.csv';
+            
+            // CHANGED HEADERS: Added NationalID, DueDate, and renamed Unit to House
+            headers = ['Name', 'House', 'Rent', 'Phone', 'NationalID', 'DueDate', 'Status']; 
+            
+            // UPDATED MAPPING to capture all details from profile page
+            data = globalTenants.map(t => ({
+                Name:       t.Name || t.name || t.TenantName || '',
+                
+                // Maps to 'House', 'Unit', or 'UnitNo'
+                House:      t.House || t.house || t.Unit || t.unit || t.UnitNo || '', 
+                
+                Rent:       t.Rent || t.rent || t.Amount || 0,
+                Phone:      t.Phone || t.phone || t.Contact || t.PhoneNumber || t.mobile || '',
+                
+                // New Details
+                NationalID: t.NationalID || t.natID || t.IDNumber || '-',
+                DueDate:    t.DueDate || t["Due Date"] || t.due_date || '5th',
+                
+                Status:     t.Status || t.status || 'Active'
+            }));
+
+        } else if (type === 'payments') {
+            if(globalPayments.length === 0) return alert("No payment data available.");
+            filename = 'RentPro_Payments.csv';
+            headers = ['Date', 'TenantName', 'Amount', 'Method', 'Reference'];
+            
+            data = globalPayments.map(p => ({
+                Date:       p.Date || p.date || '',
+                TenantName: p.TenantName || p.tenant || p.Name || 'Unknown',
+                Amount:     p.Amount || p.amount || 0,
+                Method:     p.Method || p.method || p.Mode || '',
+                Reference:  p.Reference || p.ref || p.RefNo || ''
+            }));
+
+        } else if (type === 'expenses') {
+            if(globalExpenses.length === 0) return alert("No expense data available.");
+            filename = 'RentPro_Expenses.csv';
+            headers = ['Date', 'Category', 'Amount', 'Description'];
+            
+            data = globalExpenses.map(e => ({
+                Date:        e.date || e.Date || '',
+                Category:    e.category || e.Category || '',
+                Amount:      e.amount || e.Amount || 0,
+                Description: e.description || e.Description || ''
+            }));
+        }
+
+        downloadCSV(data, headers, filename);
+    };
+
+    function downloadCSV(data, headers, filename) {
+        const csvRows = [];
+        csvRows.push(headers.join(','));
+
+        for (const row of data) {
+            const values = headers.map(header => {
+                const val = row[header] !== undefined ? row[header] : "";
+                const escaped = ('' + val).replace(/"/g, '\\"'); 
+                return `"${escaped}"`; 
+            });
+            csvRows.push(values.join(','));
+        }
+
+        const csvString = csvRows.join('\n');
+        const blob = new Blob([csvString], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', filename);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
     function renderProfitChart(income, expense) {
         const ctx = document.getElementById('profitChart').getContext('2d');
         if(profitChart) profitChart.destroy();
-
         profitChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -262,19 +516,22 @@
                     label: 'Amount (KES)',
                     data: [income, expense],
                     backgroundColor: ['#10b981', '#ef4444'],
-                    borderRadius: 8
+                    borderRadius: 6,
+                    barThickness: 50
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
+                scales: { 
+                    y: { beginAtZero: true, grid: { borderDash: [2, 2] } },
+                    x: { grid: { display: false } }
+                }
             }
         });
     }
 
-    // --- CHART 2: Payment Methods ---
     function renderMethodChart(payments) {
         const ctx = document.getElementById('methodChart').getContext('2d');
         const counts = {};
@@ -282,28 +539,27 @@
             const m = (p.Method || 'Unknown').toUpperCase();
             counts[m] = (counts[m] || 0) + Number(p.Amount);
         });
-
         if(methodChart) methodChart.destroy();
-
         methodChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: Object.keys(counts),
                 datasets: [{
                     data: Object.values(counts),
-                    backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981'],
-                    borderWidth: 0
+                    backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ec4899'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'right' } }
+                plugins: { legend: { position: 'right', labels: { usePointStyle: true, padding: 20 } } },
+                cutout: '70%'
             }
         });
     }
 
-    // Logout
     const logoutBtn = document.getElementById('logoutBtn');
     if(logoutBtn) logoutBtn.addEventListener('click', () => signOut(auth));
 
