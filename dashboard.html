@@ -5,209 +5,235 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>RentPro — Dashboard</title>
   
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    :root {
-      --rp-primary: #1d4ed8; 
-      --rp-dark: #111827; 
-      --rp-light: #f8fafc; /* Slightly lighter background */
-      --rp-accent: #3b82f6;
-      --rp-border: #e2e8f0;
-      --sidebar-width: 220px; /* Reduced width */
+    :root { 
+        --rp-primary: #2563eb; 
+        --rp-secondary: #475569;
+        --rp-success: #10b981;
+        --rp-danger: #ef4444;
+        --rp-warning: #f59e0b;
+        --rp-bg: #f1f5f9; 
+        --rp-sidebar: #0f172a; 
     }
-
-    body { background: var(--rp-light); font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-size: 0.9rem; color: #334155; }
+    
+    body { 
+        background: var(--rp-bg); 
+        font-family: 'Inter', system-ui, sans-serif; 
+        color: #334155;
+        overflow-x: hidden;
+    }
 
     /* --- SIDEBAR --- */
-    .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--rp-dark); color: #fff; position: fixed; top: 0; left: 0; z-index: 100; display: flex; flex-direction: column; }
-    .sidebar-header { padding: 20px 20px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .sidebar-brand { font-size: 1.1rem; font-weight: 700; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 10px; }
-    .nav-link { color: #94a3b8; padding: 12px 20px; display: flex; align-items: center; gap: 10px; transition: 0.2s; font-size: 0.85rem; text-decoration: none; }
-    .nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
-    .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #fff; border-right: 3px solid var(--rp-accent); }
-    .nav-link i { width: 18px; text-align: center; font-size: 0.9rem; }
-    
-    /* --- CONTENT AREA --- */
-    .content { margin-left: var(--sidebar-width); padding: 25px; }
-
-    /* Minimal Header */
-    .page-header { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: end; }
-    .page-title { font-weight: 700; font-size: 1.25rem; color: #0f172a; margin: 0; }
-    .page-subtitle { color: #64748b; font-size: 0.8rem; margin: 0; }
-
-    /* Minimal Welcome Banner */
-    .welcome-banner {
-      background: #fff;
-      border: 1px solid var(--rp-border);
-      border-left: 4px solid var(--rp-primary);
-      border-radius: 8px;
-      padding: 15px 20px;
-      margin-bottom: 20px;
-      display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    .sidebar { 
+        width: 260px; min-height: 100vh; background: var(--rp-sidebar); 
+        color: #fff; position: fixed; top: 0; left: 0; 
+        display: flex; flex-direction: column; z-index: 1000;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.1);
     }
+    .sidebar-header { border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-link { 
+        color: #94a3b8; padding: 16px 28px; display: flex; align-items: center; gap: 14px; 
+        text-decoration: none; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent;
+    }
+    .nav-link:hover { background: rgba(255,255,255,0.03); color: #fff; padding-left: 32px; }
+    .nav-link.active { 
+        background: rgba(37, 99, 235, 0.1); color: #fff; 
+        border-left-color: var(--rp-primary); 
+        background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, transparent 100%);
+    }
+    .content { margin-left: 260px; padding: 40px; }
 
-    /* Minimal Cards */
+    /* --- HERO CARDS --- */
     .card-hero {
-      background: #fff; border-radius: 10px; padding: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--rp-border);
-      height: 100%; transition: transform 0.2s ease;
+        background: white; border-radius: 16px; padding: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        border: 1px solid #e2e8f0; height: 100%; position: relative; overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
     }
-    .card-hero:hover { border-color: #cbd5e1; }
-    
-    .card-label { color: #64748b; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-    .text-value { font-weight: 700; margin-bottom: 0; color: #0f172a; font-size: 1.4rem; letter-spacing: -0.5px; }
+    .card-hero:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--rp-primary); }
+
+    .card-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; margin-bottom: 8px; }
+    .card-value { font-size: 1.8rem; font-weight: 800; color: #0f172a; margin-bottom: 0; line-height: 1.2; }
     
     .icon-box {
-      width: 36px; height: 36px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem;
+        width: 48px; height: 48px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.25rem; margin-left: auto;
     }
+    
     .bg-blue-light { background: #eff6ff; color: #3b82f6; }
-    .bg-purple-light { background: #f5f3ff; color: #8b5cf6; }
+    .bg-purple-light { background: #f3e8ff; color: #a855f7; }
     .bg-orange-light { background: #fff7ed; color: #f97316; }
-    .bg-green-light { background: #f0fdf4; color: #16a34a; }
+    .bg-green-light { background: #f0fdf4; color: #22c55e; }
 
-    .chart-container { position: relative; height: 240px; width: 100%; }
+    /* --- CHART SECTION --- */
+    .chart-card { background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; height: 400px; }
+    .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .chart-title { font-weight: 700; color: #1e293b; margin: 0; font-size: 1rem; }
 
-    /* --- COMPACT ACTIVITY LIST --- */
+    /* --- RECENT ACTIVITY --- */
     .activity-list { list-style: none; padding: 0; margin: 0; }
     .activity-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 0; border-bottom: 1px solid #f1f5f9;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 0; border-bottom: 1px solid #f1f5f9;
+        transition: background 0.2s;
     }
     .activity-item:last-child { border-bottom: none; }
+    .activity-item:hover { background: #f8fafc; padding-left: 10px; padding-right: 10px; border-radius: 8px; margin: 0 -10px; }
     
     .avatar-circle {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: #f1f5f9; color: #475569;
-      font-weight: 600; font-size: 0.75rem;
-      display: flex; align-items: center; justify-content: center;
-      margin-right: 12px;
+        width: 40px; height: 40px; border-radius: 50%;
+        background: #f1f5f9; color: #475569;
+        font-weight: 700; font-size: 0.9rem;
+        display: flex; align-items: center; justify-content: center;
+        margin-right: 15px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
-    .activity-info h6 { font-size: 0.85rem; font-weight: 600; margin: 0; color: #334155; }
-    .activity-info span { font-size: 0.7rem; color: #94a3b8; display: flex; align-items: center; gap: 4px; }
-    
-    .amount-badge {
-      font-size: 0.8rem; font-weight: 600; color: #16a34a;
+
+    /* Welcome Banner */
+    .welcome-banner {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        border-radius: 16px; padding: 30px; color: white; margin-bottom: 30px;
+        position: relative; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+    }
+    .welcome-bg-icon {
+        position: absolute; right: -20px; bottom: -40px; font-size: 10rem; 
+        opacity: 0.1; transform: rotate(-15deg); color: white;
     }
 
     /* Buttons */
-    .btn-sm-custom { padding: 6px 12px; font-size: 0.8rem; }
+    .btn-refresh {
+        background: white; border: 1px solid #cbd5e1; color: #475569; font-weight: 600;
+        padding: 8px 16px; border-radius: 30px; transition: all 0.2s; font-size: 0.85rem;
+    }
+    .btn-refresh:hover { background: #f8fafc; color: #1e293b; transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
     /* Responsive */
-    @media (max-width: 768px) {
-      .content { margin-left: 0; padding: 15px; }
-      .sidebar { display: none; }
-    }
+    @media (max-width: 768px) { .sidebar { display: none; } .content { margin-left: 0; padding: 20px; } }
   </style>
 </head>
 <body>
 
   <div class="sidebar">
-    <div class="sidebar-header">
-      <a href="#" class="sidebar-brand"><i class="fa-solid fa-layer-group"></i> RentPro</a>
+    <div class="sidebar-header p-4">
+      <a href="#" class="text-white text-decoration-none h4 fw-bold d-flex align-items-center">
+        <div class="bg-primary rounded-3 d-flex align-items-center justify-content-center me-2" style="width:40px; height:40px;">
+            <i class="fa-solid fa-building"></i>
+        </div>
+        RentPro
+      </a>
     </div>
     <nav class="mt-2">
-        <a href="dashboard.html" class="nav-link active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-        <a href="tenants.html" class="nav-link"><i class="fa-solid fa-users"></i> Tenants</a>
-        <a href="payments.html" class="nav-link"><i class="fa-solid fa-money-bill-wave"></i> Payments</a>
-        <a href="pay-rent.html" class="nav-link"><i class="fa-solid fa-credit-card"></i> Pay Rent</a>
-        <a href="expenses.html" class="nav-link"><i class="fa-solid fa-receipt"></i> Expenses</a>
-        <a href="reports.html" class="nav-link"><i class="fa-solid fa-chart-column"></i> Reports</a>
-        <div class="mt-auto border-top border-secondary pt-2">
-            <a href="#" class="nav-link" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-        </div>
+      <a href="dashboard.html" class="nav-link active"><i class="fa-solid fa-chart-pie me-2"></i> Dashboard</a>
+      <a href="tenants.html" class="nav-link"><i class="fa-solid fa-users me-2"></i> Tenants</a>
+      <a href="payments.html" class="nav-link"><i class="fa-solid fa-money-bill-wave me-2"></i> Payments</a>
+      <a href="pay.html" class="nav-link"><i class="fa-solid fa-credit-card me-2"></i> Pay Rent</a>
+      <a href="expenses.html" class="nav-link"><i class="fa-solid fa-receipt me-2"></i> Expenses</a>
+      <a href="reports.html" class="nav-link"><i class="fa-solid fa-chart-column me-2"></i> Reports</a>
+      <div style="flex-grow:1"></div>
+      <a href="#" class="nav-link text-danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a>
     </nav>
   </div>
 
   <main class="content">
     
-    <div class="page-header">
-      <div>
-        <h2 class="page-title">Dashboard</h2>
-        <p class="page-subtitle" id="currentDate">Overview</p>
-      </div>
-      <button class="btn btn-white border btn-sm-custom shadow-sm" id="refreshDashboard">
-        <i class="fa-solid fa-rotate me-1"></i> Refresh
-      </button>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h5 class="fw-bold text-dark m-0">Dashboard</h5>
+            <p class="text-muted small m-0" id="currentDate">Loading date...</p>
+        </div>
+        <button class="btn-refresh" id="refreshDashboard">
+            <i class="fa-solid fa-rotate me-2"></i> Sync Data
+        </button>
     </div>
 
     <div class="welcome-banner">
-      <div>
-        <h6 class="fw-bold mb-1" id="welcomeHeader">Hello!</h6>
-        <p class="mb-0 text-muted small">You have <span id="bannerCount" class="fw-bold text-dark">0</span> active tenants.</p>
-      </div>
-      <i class="fa-regular fa-building text-light fa-2x"></i>
+        <div class="position-relative" style="z-index: 2;">
+            <h2 class="fw-bold mb-1" id="welcomeHeader">Hello!</h2>
+            <p class="mb-0 opacity-75">Here is your property portfolio overview for today.</p>
+        </div>
+        <i class="fa-solid fa-city welcome-bg-icon"></i>
     </div>
     
-    <p id="statusMessage" class="mb-3 small text-muted"></p>
+    <p id="statusMessage" class="mb-3 small text-muted fst-italic"></p>
 
-    <div class="row g-3 mb-3">
-      <div class="col-6 col-xl-3">
-        <div class="card-hero d-flex align-items-center justify-content-between">
-          <div>
-            <p class="card-label">Tenants</p>
-            <h3 id="totalTenants" class="text-value">—</h3>
-          </div>
-          <div class="icon-box bg-blue-light"><i class="fa-solid fa-users"></i></div>
+    <div class="row g-4 mb-5">
+      <div class="col-md-6 col-xl-3">
+        <div class="card-hero">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="card-label">Total Tenants</div>
+                    <h3 id="totalTenants" class="card-value">—</h3>
+                </div>
+                <div class="icon-box bg-blue-light"><i class="fa-solid fa-users"></i></div>
+            </div>
         </div>
       </div>
 
-      <div class="col-6 col-xl-3">
-        <div class="card-hero d-flex align-items-center justify-content-between">
-          <div>
-            <p class="card-label">Expected Rent</p>
-            <h3 id="totalRent" class="text-value">—</h3>
-          </div>
-          <div class="icon-box bg-purple-light"><i class="fa-regular fa-calendar-check"></i></div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card-hero">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="card-label">Expected Rent</div>
+                    <h3 id="totalRent" class="card-value">—</h3>
+                </div>
+                <div class="icon-box bg-purple-light"><i class="fa-solid fa-bullseye"></i></div>
+            </div>
         </div>
       </div>
 
-      <div class="col-6 col-xl-3">
-        <div class="card-hero d-flex align-items-center justify-content-between">
-          <div>
-            <p class="card-label">Transactions</p>
-            <h3 id="totalPayments" class="text-value">—</h3>
-          </div>
-          <div class="icon-box bg-orange-light"><i class="fa-solid fa-list-ol"></i></div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card-hero">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="card-label">Collected</div>
+                    <h3 id="totalCollected" class="card-value text-success">—</h3>
+                </div>
+                <div class="icon-box bg-green-light"><i class="fa-solid fa-wallet"></i></div>
+            </div>
         </div>
       </div>
 
-      <div class="col-6 col-xl-3">
-        <div class="card-hero d-flex align-items-center justify-content-between">
-          <div>
-            <p class="card-label">Collected</p>
-            <h3 id="totalCollected" class="text-value text-success">—</h3>
-          </div>
-          <div class="icon-box bg-green-light"><i class="fa-solid fa-sack-dollar"></i></div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card-hero">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="card-label">Transactions</div>
+                    <h3 id="totalPayments" class="card-value">—</h3>
+                </div>
+                <div class="icon-box bg-orange-light"><i class="fa-solid fa-receipt"></i></div>
+            </div>
         </div>
       </div>
     </div>
 
-    <div class="row g-3">
+    <div class="row g-4">
         <div class="col-lg-8">
-            <div class="card-hero">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold mb-0 small text-uppercase text-muted">Revenue Analytics</h6>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h6 class="chart-title"><i class="fa-solid fa-chart-simple text-primary me-2"></i>Revenue Analytics</h6>
+                    <span class="badge bg-light text-dark border">Year to Date</span>
                 </div>
-                <div class="chart-container">
+                <div style="height: 300px; width: 100%;">
                     <canvas id="revenueChart"></canvas>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-4">
-            <div class="card-hero" style="height: 100%; max-height: 350px; overflow-y: auto;">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold mb-0 small text-uppercase text-muted">Recent Activity</h6>
-                    <a href="payments.html" class="text-decoration-none" style="font-size: 0.75rem;">View All</a>
+            <div class="chart-card" style="height: 400px; overflow-y: auto;">
+                <div class="chart-header">
+                    <h6 class="chart-title"><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Recent Activity</h6>
+                    <a href="payments.html" class="text-decoration-none small fw-bold">View All</a>
                 </div>
                 
                 <ul class="activity-list" id="recentActivityList">
-                    <li class="text-center text-muted py-4 small">No recent activity</li>
+                    <li class="text-center text-muted py-5 small">
+                        <i class="fa-solid fa-spinner fa-spin mb-2"></i><br>Loading activity...
+                    </li>
                 </ul>
             </div>
         </div>
@@ -219,8 +245,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script type="module">
-
-    // 0. FIREBASE SETUP
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -238,26 +262,23 @@
     const auth = getAuth(app);
     let currentUserUID = null;
 
-    // Security & Init
+    // WEB APP URL
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
+
     onAuthStateChanged(auth, (user) => {
         if (!user) {
             window.location.href = "index.html";
         } else {
             currentUserUID = user.uid;
-            
             if(user.email) {
                 const namePart = user.email.split('@')[0];
                 const cleanName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-                document.getElementById('welcomeHeader').innerText = `Hello, ${cleanName}!`;
+                document.getElementById('welcomeHeader').innerText = `Welcome back, ${cleanName}!`;
             }
             window.loadDashboard();
         }
     });
 
-    // 1. CONFIG
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
-
-    // 2. UTILS
     const $ = (id) => document.getElementById(id);
     const formatCurrency = (amount) => {
         const rounded = Math.round(Number(amount) || 0); 
@@ -266,7 +287,6 @@
         }).format(rounded).replace('KES', '').trim(); 
     };
 
-    // 3. API FETCH
     async function apiFetch(params = {}) {
         const url = new URL(WEB_APP_URL);
         Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
@@ -279,43 +299,38 @@
         }
     }
 
-    // 4. MAIN DASHBOARD LOGIC
     let revenueChartInstance = null;
     const dateEl = $('currentDate');
-    if(dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    if(dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
     window.loadDashboard = async function() {
         if(!currentUserUID) return;
 
         const statusEl = $('statusMessage');
-        statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
+        statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing financial data...';
         
         try {
-            // --- FETCH DATA ---
             const tenantsRes = await apiFetch({ action: 'getTenants', t: new Date().getTime() });
             const paymentsRes = await apiFetch({ action: 'getPayments', t: new Date().getTime() });
             
             let tenants = Array.isArray(tenantsRes) ? tenantsRes : (tenantsRes.data || []);
             let payments = Array.isArray(paymentsRes) ? paymentsRes : (paymentsRes.data || []);
             
-            // Filter by User
-            tenants = tenants.filter(t => t.OwnerID === currentUserUID);
-            // payments = payments.filter(p => p.OwnerID === currentUserUID); // Add if payments have IDs
+            // --- GLOBAL DEMO MODE ENABLED ---
+            // Filtering is DISABLED so all users see all data
+            // tenants = tenants.filter(t => t.OwnerID === currentUserUID);
+            // payments = payments.filter(p => p.OwnerID === currentUserUID);
 
             statusEl.innerHTML = '';
 
-            // --- CALCULATE TOTALS ---
-            // FIXED: Added t.Rent (Capital R) to match Google Sheet Header
             const totalRent = tenants.reduce((sum, t) => {
                 const rentVal = t.Rent || t.rent || t.rentAmount || 0;
                 return sum + Number(rentVal);
             }, 0);
 
-            const totalCollected = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+            const totalCollected = payments.reduce((sum, p) => sum + (Number(p.Amount || p.amount) || 0), 0);
 
-            // --- UPDATE UI ---
             if($('totalTenants')) $('totalTenants').innerText = tenants.length;
-            if($('bannerCount')) $('bannerCount').innerText = tenants.length;
             if($('totalRent')) $('totalRent').innerText = formatCurrency(totalRent);
             if($('totalPayments')) $('totalPayments').innerText = payments.length;
             if($('totalCollected')) $('totalCollected').innerText = formatCurrency(totalCollected);
@@ -332,30 +347,31 @@
     function renderRecentActivity(payments) {
         const list = $('recentActivityList');
         if (!list || !payments.length) {
-            list.innerHTML = `<li class="text-center text-muted py-4 small">No recent activity</li>`;
+            list.innerHTML = `<li class="text-center text-muted py-5 small">No recent activity found.</li>`;
             return;
         }
         
-        const sorted = [...payments].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const sorted = [...payments].sort((a, b) => new Date(b.Date || b.date) - new Date(a.Date || a.date));
 
-        list.innerHTML = sorted.slice(0, 5).map(p => {
-            const name = String(p.name || 'Unknown'); 
+        list.innerHTML = sorted.slice(0, 7).map(p => {
+            const name = String(p.TenantName || p.name || 'Unknown'); 
             const initial = name.charAt(0).toUpperCase();
             
-            // Shorter date format for minimal look
-            let dateDisplay = p.date;
-            try { dateDisplay = new Date(p.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'}); } catch(e){}
+            let dateDisplay = p.Date || p.date;
+            try { dateDisplay = new Date(dateDisplay).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'}); } catch(e){}
+
+            const amt = p.Amount || p.amount || 0;
 
             return `
             <li class="activity-item">
                 <div class="d-flex align-items-center">
                     <div class="avatar-circle">${initial}</div>
-                    <div class="activity-info">
-                        <h6>${name}</h6>
-                        <span>${dateDisplay}</span>
+                    <div>
+                        <h6 class="fw-bold m-0 text-dark" style="font-size: 0.9rem;">${name}</h6>
+                        <span class="text-muted small">${dateDisplay}</span>
                     </div>
                 </div>
-                <div class="amount-badge">+${formatCurrency(p.amount)}</div>
+                <div class="fw-bold text-success">+${formatCurrency(amt)}</div>
             </li>`;
         }).join('');
     }
@@ -367,11 +383,12 @@
         
         const monthlyData = {};
         payments.forEach(p => {
-            if(!p.date) return;
+            const dStr = p.Date || p.date;
+            if(!dStr) return;
             try {
-                const d = new Date(p.date);
+                const d = new Date(dStr);
                 const key = d.toLocaleString('default', { month: 'short' });
-                monthlyData[key] = (monthlyData[key] || 0) + Number(p.amount);
+                monthlyData[key] = (monthlyData[key] || 0) + Number(p.Amount || p.amount);
             } catch(e) {}
         });
 
@@ -387,8 +404,8 @@
                 datasets: [{
                     data: data.length ? data : [0],
                     backgroundColor: '#3b82f6',
-                    borderRadius: 3,
-                    barThickness: 15 // Thinner bars for minimal look
+                    borderRadius: 6,
+                    barThickness: 30
                 }]
             },
             options: {
@@ -396,14 +413,20 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: {size: 10} } },
-                    x: { grid: { display: false }, ticks: { font: {size: 10} } }
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: '#f1f5f9', borderDash: [5, 5] }, 
+                        ticks: { font: {family: 'Inter', size: 11} } 
+                    },
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { font: {family: 'Inter', size: 11} } 
+                    }
                 }
             }
         });
     }
 
-    // Init & Events
     const refreshBtn = $('refreshDashboard');
     if(refreshBtn) refreshBtn.addEventListener('click', () => window.loadDashboard());
 
