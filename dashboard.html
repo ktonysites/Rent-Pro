@@ -14,104 +14,41 @@
         --rp-primary: #2563eb; 
         --rp-secondary: #475569;
         --rp-success: #10b981;
-        --rp-danger: #ef4444;
-        --rp-warning: #f59e0b;
         --rp-bg: #f1f5f9; 
         --rp-sidebar: #0f172a; 
     }
     
-    body { 
-        background: var(--rp-bg); 
-        font-family: 'Inter', system-ui, sans-serif; 
-        color: #334155;
-        overflow-x: hidden;
-    }
+    body { background: var(--rp-bg); font-family: 'Inter', system-ui, sans-serif; color: #334155; }
 
-    /* --- SIDEBAR --- */
-    .sidebar { 
-        width: 260px; min-height: 100vh; background: var(--rp-sidebar); 
-        color: #fff; position: fixed; top: 0; left: 0; 
-        display: flex; flex-direction: column; z-index: 1000;
-        box-shadow: 4px 0 24px rgba(0,0,0,0.1);
-    }
+    /* SIDEBAR */
+    .sidebar { width: 260px; min-height: 100vh; background: var(--rp-sidebar); color: #fff; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; z-index: 1000; }
     .sidebar-header { border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .nav-link { 
-        color: #94a3b8; padding: 16px 28px; display: flex; align-items: center; gap: 14px; 
-        text-decoration: none; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent;
-    }
+    .nav-link { color: #94a3b8; padding: 16px 28px; display: flex; align-items: center; gap: 14px; text-decoration: none; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
     .nav-link:hover { background: rgba(255,255,255,0.03); color: #fff; padding-left: 32px; }
-    .nav-link.active { 
-        background: rgba(37, 99, 235, 0.1); color: #fff; 
-        border-left-color: var(--rp-primary); 
-        background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, transparent 100%);
-    }
+    .nav-link.active { background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, transparent 100%); border-left-color: var(--rp-primary); color: white; }
     .content { margin-left: 260px; padding: 40px; }
 
-    /* --- HERO CARDS --- */
-    .card-hero {
-        background: white; border-radius: 16px; padding: 24px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-        border: 1px solid #e2e8f0; height: 100%; position: relative; overflow: hidden;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .card-hero:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--rp-primary); }
-
-    .card-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; margin-bottom: 8px; }
-    .card-value { font-size: 1.8rem; font-weight: 800; color: #0f172a; margin-bottom: 0; line-height: 1.2; }
+    /* CARDS */
+    .card-hero { background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; height: 100%; transition: transform 0.2s; }
+    .card-hero:hover { transform: translateY(-3px); border-color: var(--rp-primary); }
+    .card-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #64748b; letter-spacing: 1px; margin-bottom: 8px; }
+    .card-value { font-size: 2rem; font-weight: 800; color: #0f172a; margin: 0; }
     
-    .icon-box {
-        width: 48px; height: 48px; border-radius: 12px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.25rem; margin-left: auto;
-    }
-    
+    .icon-box { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
     .bg-blue-light { background: #eff6ff; color: #3b82f6; }
     .bg-purple-light { background: #f3e8ff; color: #a855f7; }
-    .bg-orange-light { background: #fff7ed; color: #f97316; }
     .bg-green-light { background: #f0fdf4; color: #22c55e; }
+    .bg-orange-light { background: #fff7ed; color: #f97316; }
 
-    /* --- CHART SECTION --- */
-    .chart-card { background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; height: 400px; }
-    .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .chart-title { font-weight: 700; color: #1e293b; margin: 0; font-size: 1rem; }
-
-    /* --- RECENT ACTIVITY --- */
+    /* ACTIVITY LIST */
     .activity-list { list-style: none; padding: 0; margin: 0; }
-    .activity-item {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 12px 0; border-bottom: 1px solid #f1f5f9;
-        transition: background 0.2s;
-    }
-    .activity-item:last-child { border-bottom: none; }
-    .activity-item:hover { background: #f8fafc; padding-left: 10px; padding-right: 10px; border-radius: 8px; margin: 0 -10px; }
-    
-    .avatar-circle {
-        width: 40px; height: 40px; border-radius: 50%;
-        background: #f1f5f9; color: #475569;
-        font-weight: 700; font-size: 0.9rem;
-        display: flex; align-items: center; justify-content: center;
-        margin-right: 15px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
+    .activity-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+    .avatar-circle { width: 40px; height: 40px; border-radius: 50%; background: #f8fafc; color: #475569; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-right: 15px; border: 1px solid #e2e8f0; }
 
-    /* Welcome Banner */
-    .welcome-banner {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        border-radius: 16px; padding: 30px; color: white; margin-bottom: 30px;
-        position: relative; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
-    }
-    .welcome-bg-icon {
-        position: absolute; right: -20px; bottom: -40px; font-size: 10rem; 
-        opacity: 0.1; transform: rotate(-15deg); color: white;
-    }
+    /* WELCOME BANNER */
+    .welcome-banner { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border-radius: 16px; padding: 30px; color: white; margin-bottom: 30px; position: relative; overflow: hidden; }
+    .welcome-bg { position: absolute; right: -20px; bottom: -40px; font-size: 10rem; opacity: 0.1; transform: rotate(-15deg); }
 
-    /* Buttons */
-    .btn-refresh {
-        background: white; border: 1px solid #cbd5e1; color: #475569; font-weight: 600;
-        padding: 8px 16px; border-radius: 30px; transition: all 0.2s; font-size: 0.85rem;
-    }
-    .btn-refresh:hover { background: #f8fafc; color: #1e293b; transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-
-    /* Responsive */
     @media (max-width: 768px) { .sidebar { display: none; } .content { margin-left: 0; padding: 20px; } }
   </style>
 </head>
@@ -119,91 +56,60 @@
 
   <div class="sidebar">
     <div class="sidebar-header p-4">
-      <a href="#" class="text-white text-decoration-none h4 fw-bold d-flex align-items-center">
-        <div class="bg-primary rounded-3 d-flex align-items-center justify-content-center me-2" style="width:40px; height:40px;">
-            <i class="fa-solid fa-building"></i>
-        </div>
-        RentPro
-      </a>
+      <a href="#" class="text-white text-decoration-none h4 fw-bold"><i class="fa-solid fa-building me-2"></i> RentPro</a>
     </div>
     <nav class="mt-2">
-      <a href="dashboard.html" class="nav-link active"><i class="fa-solid fa-chart-pie me-2"></i> Dashboard</a>
-      <a href="tenants.html" class="nav-link"><i class="fa-solid fa-users me-2"></i> Tenants</a>
-      <a href="payments.html" class="nav-link"><i class="fa-solid fa-money-bill-wave me-2"></i> Payments</a>
-      <a href="pay.html" class="nav-link"><i class="fa-solid fa-credit-card me-2"></i> Pay Rent</a>
-      <a href="expenses.html" class="nav-link"><i class="fa-solid fa-receipt me-2"></i> Expenses</a>
-      <a href="reports.html" class="nav-link"><i class="fa-solid fa-chart-column me-2"></i> Reports</a>
+      <a href="dashboard.html" class="nav-link active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+      <a href="tenants.html" class="nav-link"><i class="fa-solid fa-users"></i> Tenants</a>
+      <a href="payments.html" class="nav-link"><i class="fa-solid fa-money-bill-wave"></i> Payments</a>
+      <a href="pay.html" class="nav-link"><i class="fa-solid fa-credit-card"></i> Pay Rent</a>
+      <a href="expenses.html" class="nav-link"><i class="fa-solid fa-receipt"></i> Expenses</a>
+      <a href="reports.html" class="nav-link"><i class="fa-solid fa-chart-column"></i> Reports</a>
       <div style="flex-grow:1"></div>
-      <a href="#" class="nav-link text-danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a>
+      <a href="#" class="nav-link text-danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
     </nav>
   </div>
 
   <main class="content">
-    
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h5 class="fw-bold text-dark m-0">Dashboard</h5>
-            <p class="text-muted small m-0" id="currentDate">Loading date...</p>
-        </div>
-        <button class="btn-refresh" id="refreshDashboard">
-            <i class="fa-solid fa-rotate me-2"></i> Sync Data
-        </button>
-    </div>
-
     <div class="welcome-banner">
-        <div class="position-relative" style="z-index: 2;">
-            <h2 class="fw-bold mb-1" id="welcomeHeader">Hello!</h2>
-            <p class="mb-0 opacity-75">Here is your property portfolio overview for today.</p>
+        <div style="position: relative; z-index: 2;">
+            <h2 class="fw-bold mb-1" id="welcomeHeader">Dashboard</h2>
+            <p class="mb-0 opacity-75" id="currentDate">Loading...</p>
         </div>
-        <i class="fa-solid fa-city welcome-bg-icon"></i>
+        <i class="fa-solid fa-city welcome-bg"></i>
     </div>
     
-    <p id="statusMessage" class="mb-3 small text-muted fst-italic"></p>
+    <p id="statusMessage" class="small text-muted mb-3"></p>
 
-    <div class="row g-4 mb-5">
-      <div class="col-md-6 col-xl-3">
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
         <div class="card-hero">
             <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="card-label">Total Tenants</div>
-                    <h3 id="totalTenants" class="card-value">—</h3>
-                </div>
+                <div><div class="card-label">Tenants</div><h3 id="totalTenants" class="card-value">0</h3></div>
                 <div class="icon-box bg-blue-light"><i class="fa-solid fa-users"></i></div>
             </div>
         </div>
       </div>
-
-      <div class="col-md-6 col-xl-3">
+      <div class="col-md-3">
         <div class="card-hero">
             <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="card-label">Expected Rent</div>
-                    <h3 id="totalRent" class="card-value">—</h3>
-                </div>
+                <div><div class="card-label">Expected Rent</div><h3 id="totalRent" class="card-value">0</h3></div>
                 <div class="icon-box bg-purple-light"><i class="fa-solid fa-bullseye"></i></div>
             </div>
         </div>
       </div>
-
-      <div class="col-md-6 col-xl-3">
+      <div class="col-md-3">
         <div class="card-hero">
             <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="card-label">Collected</div>
-                    <h3 id="totalCollected" class="card-value text-success">—</h3>
-                </div>
+                <div><div class="card-label">Collected</div><h3 id="totalCollected" class="card-value text-success">0</h3></div>
                 <div class="icon-box bg-green-light"><i class="fa-solid fa-wallet"></i></div>
             </div>
         </div>
       </div>
-
-      <div class="col-md-6 col-xl-3">
+      <div class="col-md-3">
         <div class="card-hero">
             <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="card-label">Transactions</div>
-                    <h3 id="totalPayments" class="card-value">—</h3>
-                </div>
+                <div><div class="card-label">Transactions</div><h3 id="totalPayments" class="card-value">0</h3></div>
                 <div class="icon-box bg-orange-light"><i class="fa-solid fa-receipt"></i></div>
             </div>
         </div>
@@ -212,33 +118,20 @@
 
     <div class="row g-4">
         <div class="col-lg-8">
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h6 class="chart-title"><i class="fa-solid fa-chart-simple text-primary me-2"></i>Revenue Analytics</h6>
-                    <span class="badge bg-light text-dark border">Year to Date</span>
-                </div>
-                <div style="height: 300px; width: 100%;">
-                    <canvas id="revenueChart"></canvas>
-                </div>
+            <div class="card-hero">
+                <h6 class="fw-bold mb-4">Revenue Analytics</h6>
+                <div style="height: 300px;"><canvas id="revenueChart"></canvas></div>
             </div>
         </div>
-
         <div class="col-lg-4">
-            <div class="chart-card" style="height: 400px; overflow-y: auto;">
-                <div class="chart-header">
-                    <h6 class="chart-title"><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Recent Activity</h6>
-                    <a href="payments.html" class="text-decoration-none small fw-bold">View All</a>
-                </div>
-                
+            <div class="card-hero" style="height: 400px; overflow-y: auto;">
+                <h6 class="fw-bold mb-4">Recent Activity</h6>
                 <ul class="activity-list" id="recentActivityList">
-                    <li class="text-center text-muted py-5 small">
-                        <i class="fa-solid fa-spinner fa-spin mb-2"></i><br>Loading activity...
-                    </li>
+                    <li class="text-center text-muted py-5 small">Loading...</li>
                 </ul>
             </div>
         </div>
     </div>
-
   </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -262,7 +155,7 @@
     const auth = getAuth(app);
     let currentUserUID = null;
 
-    // WEB APP URL
+    // WEB APP URL (Same as Reports Page)
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
 
     onAuthStateChanged(auth, (user) => {
@@ -272,20 +165,14 @@
             currentUserUID = user.uid;
             if(user.email) {
                 const namePart = user.email.split('@')[0];
-                const cleanName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-                document.getElementById('welcomeHeader').innerText = `Welcome back, ${cleanName}!`;
+                document.getElementById('welcomeHeader').innerText = `Welcome, ${namePart.charAt(0).toUpperCase() + namePart.slice(1)}!`;
             }
             window.loadDashboard();
         }
     });
 
     const $ = (id) => document.getElementById(id);
-    const formatCurrency = (amount) => {
-        const rounded = Math.round(Number(amount) || 0); 
-        return new Intl.NumberFormat('en-KE', { 
-            style: 'currency', currency: 'KES', minimumFractionDigits: 0 
-        }).format(rounded).replace('KES', '').trim(); 
-    };
+    const money = (val) => new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(Number(val)||0).replace('KES','').trim();
 
     async function apiFetch(params = {}) {
         const url = new URL(WEB_APP_URL);
@@ -293,102 +180,85 @@
         try {
             const response = await fetch(url);
             return await response.json();
-        } catch (error) {
-            console.error("API Fetch Error:", error);
-            return { success: false, error: error.message }; 
-        }
+        } catch (error) { console.error(error); return []; }
     }
 
     let revenueChartInstance = null;
-    const dateEl = $('currentDate');
-    if(dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    if($('currentDate')) $('currentDate').innerText = new Date().toLocaleDateString('en-GB', { dateStyle: 'full' });
 
     window.loadDashboard = async function() {
         if(!currentUserUID) return;
-
-        const statusEl = $('statusMessage');
-        statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing financial data...';
+        $('statusMessage').innerText = 'Syncing data...';
         
-        try {
-            const tenantsRes = await apiFetch({ action: 'getTenants', t: new Date().getTime() });
-            const paymentsRes = await apiFetch({ action: 'getPayments', t: new Date().getTime() });
-            
-            let tenants = Array.isArray(tenantsRes) ? tenantsRes : (tenantsRes.data || []);
-            let payments = Array.isArray(paymentsRes) ? paymentsRes : (paymentsRes.data || []);
-            
-            // --- GLOBAL DEMO MODE ENABLED ---
-            // Filtering is DISABLED so all users see all data
-            // tenants = tenants.filter(t => t.OwnerID === currentUserUID);
-            // payments = payments.filter(p => p.OwnerID === currentUserUID);
+        // 1. Fetch Data (Removed 't' param to match working Reports page)
+        const tenantsRes = await apiFetch({ action: 'getTenants' });
+        const paymentsRes = await apiFetch({ action: 'getPayments' });
+        
+        let tenants = Array.isArray(tenantsRes) ? tenantsRes : (tenantsRes.data || []);
+        let payments = Array.isArray(paymentsRes) ? paymentsRes : (paymentsRes.data || []);
+        
+        // --- GLOBAL DEMO MODE: No Filtering ---
+        // tenants = tenants.filter(t => t.OwnerID === currentUserUID); // DISABLED
 
-            statusEl.innerHTML = '';
+        $('statusMessage').innerText = '';
 
-            const totalRent = tenants.reduce((sum, t) => {
-                const rentVal = t.Rent || t.rent || t.rentAmount || 0;
-                return sum + Number(rentVal);
-            }, 0);
+        // 2. Calculate Totals (Using Capitalized Keys matching your CSV)
+        const totalRent = tenants.reduce((sum, t) => sum + Number(t.Rent || t.Amount || 0), 0);
+        const totalCollected = payments.reduce((sum, p) => sum + Number(p.Amount || 0), 0);
 
-            const totalCollected = payments.reduce((sum, p) => sum + (Number(p.Amount || p.amount) || 0), 0);
+        // 3. Update UI
+        $('totalTenants').innerText = tenants.length;
+        $('totalRent').innerText = money(totalRent);
+        $('totalPayments').innerText = payments.length;
+        $('totalCollected').innerText = money(totalCollected);
 
-            if($('totalTenants')) $('totalTenants').innerText = tenants.length;
-            if($('totalRent')) $('totalRent').innerText = formatCurrency(totalRent);
-            if($('totalPayments')) $('totalPayments').innerText = payments.length;
-            if($('totalCollected')) $('totalCollected').innerText = formatCurrency(totalCollected);
-
-            renderChart(payments);
-            renderRecentActivity(payments);
-            
-        } catch (error) {
-            console.error(error);
-            statusEl.innerText = 'Sync failed. Check connection.';
-        }
+        renderChart(payments);
+        renderRecentActivity(payments);
     }
 
     function renderRecentActivity(payments) {
         const list = $('recentActivityList');
-        if (!list || !payments.length) {
-            list.innerHTML = `<li class="text-center text-muted py-5 small">No recent activity found.</li>`;
+        if (!payments.length) {
+            list.innerHTML = `<li class="text-center text-muted py-5 small">No activity found.</li>`;
             return;
         }
         
-        const sorted = [...payments].sort((a, b) => new Date(b.Date || b.date) - new Date(a.Date || a.date));
+        // Sort by Date (Handling standard date strings)
+        const sorted = [...payments].sort((a, b) => new Date(b.Date) - new Date(a.Date));
 
-        list.innerHTML = sorted.slice(0, 7).map(p => {
-            const name = String(p.TenantName || p.name || 'Unknown'); 
+        list.innerHTML = sorted.slice(0, 6).map(p => {
+            // Fix: Use 'TenantName' or 'Name' (Capitalized)
+            const name = String(p.TenantName || p.Name || 'Unknown');
             const initial = name.charAt(0).toUpperCase();
             
-            let dateDisplay = p.Date || p.date;
-            try { dateDisplay = new Date(dateDisplay).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'}); } catch(e){}
-
-            const amt = p.Amount || p.amount || 0;
+            // Fix: Use 'Date' (Capitalized)
+            let dStr = p.Date || 'Today';
+            try { dStr = new Date(dStr).toLocaleDateString('en-GB', {month:'short', day:'numeric'}); } catch(e){}
 
             return `
             <li class="activity-item">
                 <div class="d-flex align-items-center">
                     <div class="avatar-circle">${initial}</div>
                     <div>
-                        <h6 class="fw-bold m-0 text-dark" style="font-size: 0.9rem;">${name}</h6>
-                        <span class="text-muted small">${dateDisplay}</span>
+                        <div class="fw-bold text-dark small">${name}</div>
+                        <div class="text-muted" style="font-size:0.75rem">${dStr}</div>
                     </div>
                 </div>
-                <div class="fw-bold text-success">+${formatCurrency(amt)}</div>
+                <div class="fw-bold text-success">+${money(p.Amount || 0)}</div>
             </li>`;
         }).join('');
     }
 
     function renderChart(payments) {
-        const canvas = document.getElementById('revenueChart');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        
+        const ctx = document.getElementById('revenueChart').getContext('2d');
         const monthlyData = {};
+        
         payments.forEach(p => {
-            const dStr = p.Date || p.date;
-            if(!dStr) return;
             try {
-                const d = new Date(dStr);
+                // Fix: Use 'Date' and 'Amount' (Capitalized)
+                const d = new Date(p.Date);
                 const key = d.toLocaleString('default', { month: 'short' });
-                monthlyData[key] = (monthlyData[key] || 0) + Number(p.Amount || p.amount);
+                monthlyData[key] = (monthlyData[key] || 0) + Number(p.Amount || 0);
             } catch(e) {}
         });
 
@@ -404,8 +274,8 @@
                 datasets: [{
                     data: data.length ? data : [0],
                     backgroundColor: '#3b82f6',
-                    borderRadius: 6,
-                    barThickness: 30
+                    borderRadius: 4,
+                    barThickness: 25
                 }]
             },
             options: {
@@ -413,33 +283,14 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { 
-                        beginAtZero: true, 
-                        grid: { color: '#f1f5f9', borderDash: [5, 5] }, 
-                        ticks: { font: {family: 'Inter', size: 11} } 
-                    },
-                    x: { 
-                        grid: { display: false }, 
-                        ticks: { font: {family: 'Inter', size: 11} } 
-                    }
+                    y: { beginAtZero: true, grid: { borderDash: [4, 4] } },
+                    x: { grid: { display: false } }
                 }
             }
         });
     }
 
-    const refreshBtn = $('refreshDashboard');
-    if(refreshBtn) refreshBtn.addEventListener('click', () => window.loadDashboard());
-
-    const logoutBtn = $('logoutBtn');
-    if(logoutBtn) {
-        logoutBtn.addEventListener('click', async (e) => {
-            e.preventDefault(); 
-            if(confirm('Log out?')) {
-                await signOut(auth);
-                window.location.href = 'index.html';
-            }
-        });
-    }
+    if($('logoutBtn')) $('logoutBtn').addEventListener('click', () => signOut(auth));
 </script>
 </body>
 </html>
