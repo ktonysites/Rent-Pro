@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RentPro — Tenant Profile</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root { 
+      --rp-primary: #1d4ed8; 
+      --rp-dark: #111827; 
+      --rp-light: #f8fafc;
+      --sidebar-width: 220px;
+    }
+
+    body { background: var(--rp-light); font-family: 'Inter', sans-serif; color: #334155; }
+    
+    /* SIDEBAR */
+    .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--rp-dark); color: #fff; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; z-index: 1000; }
+    .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-link { color: #94a3b8; padding: 12px 20px; display: flex; align-items: center; gap: 10px; text-decoration: none; transition: 0.2s; font-size: 0.9rem; }
+    .nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
+    .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #fff; border-right: 3px solid #3b82f6; }
+    
+    /* CONTENT */
+    .content { margin-left: var(--sidebar-width); padding: 30px; }
+
+    /* CARDS */
+    .card-profile { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); height: 100%; }
+    
+    /* AVATAR */
+    .avatar-lg { 
+      width: 80px; height: 80px; 
+      background: #eff6ff; color: var(--rp-primary); 
+      font-size: 2rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; 
+      border-radius: 50%; margin: 0 auto 15px auto; 
+    }
+
+    /* LABELS */
+    .label-text { font-size: 0.75rem; text-transform: uppercase; color: #64748b; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .value-text { font-size: 1rem; color: #0f172a; font-weight: 500; margin-bottom: 16px; }
+
+    /* STATS */
+    .stat-box { background: #f8fafc; border-radius: 8px; padding: 15px; border: 1px solid #e2e8f0; text-align: center; }
+    .stat-value { font-size: 1.25rem; font-weight: 700; color: #1e293b; }
+    .stat-label { font-size: 0.75rem; color: #64748b; }
+
+    /* TABLE */
+    .table thead th { background: #f8fafc; font-size: 0.75rem; text-transform: uppercase; color: #64748b; font-weight: 600; }
+    .table td { vertical-align: middle; font-size: 0.9rem; }
+
+    @media (max-width: 768px) { .content { margin-left: 0; } .sidebar { display: none; } }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar-header"><h5 class="m-0 fw-bold"><i class="fa-solid fa-building me-2"></i> RentPro</h5></div>
+    <nav class="mt-2">
+        <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+        <a href="tenants.html" class="nav-link active"><i class="fa-solid fa-users"></i> Tenants</a>
+        <a href="payments.html" class="nav-link"><i class="fa-solid fa-money-bill-wave"></i> Payments</a>
+        <a href="pay-rent.html" class="nav-link"><i class="fa-regular fa-credit-card"></i> Pay Rent</a>
+        <a href="expenses.html" class="nav-link"><i class="fa-solid fa-receipt"></i> Expenses</a>
+        <a href="reports.html" class="nav-link"><i class="fa-solid fa-chart-simple"></i> Reports</a>
+        
+        <div class="mt-auto border-top border-secondary pt-2">
+           <a href="index.html" class="nav-link text-danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+    </nav>
+  </div>
+
+  <main class="content">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <a href="tenants.html" class="text-decoration-none text-muted small fw-bold"><i class="fa-solid fa-arrow-left me-1"></i> Back to Tenants</a>
+        <h2 class="fw-bold mt-1 text-dark" id="pHeaderName">Loading...</h2>
+      </div>
+      
+      <div class="d-flex gap-2">
+          <button class="btn btn-success btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#smsModal">
+            <i class="fa-solid fa-comment-sms me-2"></i> Message
+          </button>
+          
+          <button class="btn btn-outline-danger btn-sm" onclick="deleteTenant()">
+            <i class="fa-solid fa-trash me-2"></i> Delete
+          </button>
+      </div>
+    </div>
+
+    <div id="loadingState" class="text-center py-5">
+       <div class="spinner-border text-primary"></div>
+       <p class="mt-2 text-muted">Fetching profile...</p>
+    </div>
+
+    <div class="row g-4" id="profileContent" style="display:none;">
+      
+      <div class="col-lg-4">
+        <div class="card-profile text-center">
+          <div class="avatar-lg" id="pAvatar">?</div>
+          <h4 class="fw-bold mb-1" id="pName">Unknown</h4>
+          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 mb-4">Active</span>
+          
+          <div class="text-start border-top pt-4">
+             <div class="label-text">Phone Number</div>
+             <div class="value-text" id="pPhone">-</div>
+
+             <div class="label-text">National ID</div>
+             <div class="value-text" id="pNatID">-</div>
+
+             <div class="label-text">House / Unit</div>
+             <div class="value-text" id="pHouse">-</div>
+
+             <div class="label-text">Rent Amount</div>
+             <div class="value-text" id="pRent">-</div>
+
+             <div class="label-text">Next Due Date</div>
+             <div class="value-text mb-0" id="pDue">-</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        
+        <div class="row g-3 mb-4">
+           <div class="col-md-4">
+              <div class="stat-box">
+                 <div class="stat-label">Paid This Month</div>
+                 <div class="stat-value text-success" id="statPaid">0</div>
+              </div>
+           </div>
+           <div class="col-md-4">
+              <div class="stat-box">
+                 <div class="stat-label">Balance Due</div>
+                 <div class="stat-value text-danger" id="statBalance">0</div>
+              </div>
+           </div>
+           <div class="col-md-4">
+              <div class="stat-box">
+                 <div class="stat-label">Status</div>
+                 <div class="stat-value text-primary" id="statStatus">-</div>
+              </div>
+           </div>
+        </div>
+
+        <div class="card-profile p-0 overflow-hidden">
+           <div class="p-3 border-bottom bg-light d-flex justify-content-between align-items-center">
+              <h6 class="fw-bold m-0">Payment History</h6>
+              <a href="pay-rent.html" class="btn btn-primary btn-sm" style="font-size: 0.75rem;">Record Payment</a>
+           </div>
+           <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                 <thead>
+                    <tr>
+                       <th>Date</th>
+                       <th>Method</th>
+                       <th class="text-end">Amount</th>
+                    </tr>
+                 </thead>
+                 <tbody id="historyBody">
+                    <tr><td colspan="3" class="text-center p-3 text-muted">No payments found.</td></tr>
+                 </tbody>
+              </table>
+           </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade" id="smsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title fw-bold"><i class="fa-solid fa-comment-sms text-success me-2"></i>Send Message</h5>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">RECIPIENT</label>
+                <input type="text" id="smsRecipient" class="form-control bg-light" readonly>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">QUICK TEMPLATES</label>
+                <select id="smsTemplate" class="form-select border-success">
+                    <option value="" selected>Choose a template...</option>
+                    <option value="reminder">📅 Friendly Reminder (Upcoming)</option>
+                    <option value="today">🏠 Due Today!</option>
+                    <option value="overdue">⚠️ Overdue Payment</option>
+                    <option value="received">✅ Payment Received</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">MESSAGE BODY</label>
+                <textarea id="smsBody" class="form-control" rows="5" placeholder="Select a template or type your message..."></textarea>
+            </div>
+            
+            <button class="btn btn-success w-100 fw-bold" onclick="sendSMS()">
+                <i class="fa-regular fa-paper-plane me-2"></i> Send Message
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBwJEOW3jVBHLizWiJjT4a_Tay-2yUCZwk",
+        authDomain: "rentpro-saas.firebaseapp.com",
+        projectId: "rentpro-saas",
+        storageBucket: "rentpro-saas.firebasestorage.app",
+        messagingSenderId: "120985965272",
+        appId: "1:120985965272:web:c86eae74aa75460b17fdad",
+        measurementId: "G-LJRKHT6ZTD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    let currentUserUID = null;
+    let currentTenantID = null;
+    
+    // Store tenant data globally to use in templates
+    let tenantData = { name: "", phone: "", rent: 0, due: "", balance: 0 };
+
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUserUID = user.uid;
+            const params = new URLSearchParams(window.location.search);
+            currentTenantID = params.get('id');
+            if(currentTenantID) loadProfile();
+            else window.location.href = 'tenants.html';
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+
+    async function loadProfile() {
+        try {
+            const [tenantsRes, paymentsRes] = await Promise.all([
+                fetch(`${WEB_APP_URL}?action=getTenants&t=${Date.now()}`).then(r => r.json()),
+                fetch(`${WEB_APP_URL}?action=getPayments&t=${Date.now()}`).then(r => r.json())
+            ]);
+
+            const allTenants = Array.isArray(tenantsRes) ? tenantsRes : tenantsRes.data;
+            const allPayments = Array.isArray(paymentsRes) ? paymentsRes : paymentsRes.data;
+            const tenant = allTenants.find(t => String(t.ID) === String(currentTenantID));
+
+            if (!tenant) return;
+
+            renderTenantDetails(tenant);
+            renderPaymentStats(tenant, allPayments);
+
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('profileContent').style.display = 'flex';
+
+        } catch (e) {
+            console.error(e);
+            alert("Error loading profile.");
+        }
+    }
+
+    function renderTenantDetails(t) {
+        tenantData.name = t.Name || 'Tenant';
+        tenantData.phone = t.PhoneNumber || t.Phone || '';
+        tenantData.rent = Number(t.Rent || 0);
+        tenantData.due = t["Due Date"] || t.DueDate || '5th';
+
+        document.getElementById('smsRecipient').value = `${tenantData.name} (${tenantData.phone})`;
+        document.getElementById('pHeaderName').innerText = tenantData.name;
+        document.getElementById('pName').innerText = tenantData.name;
+        document.getElementById('pAvatar').innerText = tenantData.name.charAt(0).toUpperCase();
+        document.getElementById('pPhone').innerText = tenantData.phone;
+        document.getElementById('pNatID').innerText = t.NationalID || '-';
+        document.getElementById('pHouse').innerText = t.House || '-';
+        document.getElementById('pRent').innerText = "KES " + tenantData.rent.toLocaleString();
+        document.getElementById('pDue').innerText = "Day " + tenantData.due;
+    }
+
+    function renderPaymentStats(tenant, payments) {
+        const tenantPayments = payments.filter(p => (p.Name && p.Name === tenant.Name) || (p.TenantID && String(p.TenantID) === String(tenant.ID)));
+        tenantPayments.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+
+        const now = new Date();
+        const paidThisMonth = tenantPayments.reduce((sum, p) => {
+            const pDate = new Date(p.Date);
+            return (pDate.getMonth() === now.getMonth() && pDate.getFullYear() === now.getFullYear()) ? sum + Number(p.Amount) : sum;
+        }, 0);
+
+        tenantData.balance = tenantData.rent - paidThisMonth;
+
+        document.getElementById('statPaid').innerText = "KES " + paidThisMonth.toLocaleString();
+        const balEl = document.getElementById('statBalance');
+        
+        if(tenantData.balance <= 0) {
+            balEl.innerText = "Settled";
+            balEl.className = "stat-value text-success";
+            document.getElementById('statStatus').innerText = "Paid";
+        } else {
+            balEl.innerText = "KES " + tenantData.balance.toLocaleString();
+            balEl.className = "stat-value text-danger";
+            document.getElementById('statStatus').innerText = "Pending";
+        }
+
+        const tbody = document.getElementById('historyBody');
+        tbody.innerHTML = "";
+        if(tenantPayments.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center p-3 text-muted">No payments recorded.</td></tr>';
+            return;
+        }
+
+        tenantPayments.forEach(p => {
+            let dateStr = p.Date;
+            try { dateStr = new Date(p.Date).toLocaleDateString(); } catch(e){}
+            tbody.innerHTML += `<tr><td class="text-muted small">${dateStr}</td><td><span class="badge bg-light text-dark border">${p.Method || 'Cash'}</span></td><td class="text-end fw-bold text-success">+${Number(p.Amount).toLocaleString()}</td></tr>`;
+        });
+    }
+
+    // --- TEMPLATE LOGIC ---
+    document.getElementById('smsTemplate').addEventListener('change', function() {
+        const type = this.value;
+        const textArea = document.getElementById('smsBody');
+        const firstName = tenantData.name.split(' ')[0];
+        const rentFmt = tenantData.rent.toLocaleString();
+        const balFmt = tenantData.balance > 0 ? tenantData.balance.toLocaleString() : "0";
+
+        let text = "";
+
+        if (type === "reminder") {
+            text = `Hi ${firstName}! Just a friendly reminder that your rent of KES ${rentFmt} is due on Day ${tenantData.due}. 🏠 Let's keep your home sweet home secure!`;
+        } else if (type === "today") {
+            text = `Hello ${firstName}, this is a reminder that rent (KES ${rentFmt}) is due TODAY. Please make your payment to avoid any inconvenience. Thanks!`;
+        } else if (type === "overdue") {
+            text = `Hi ${firstName}, we haven't received your rent yet. You have a pending balance of KES ${balFmt}. Please clear this as soon as possible. Thank you.`;
+        } else if (type === "received") {
+            text = `Hi ${firstName}, we've received your payment. Thank you for paying on time! Have a great month ahead. ✅`;
+        }
+
+        if(text) textArea.value = text;
+    });
+
+    window.sendSMS = async () => {
+        const message = document.getElementById('smsBody').value;
+        const btn = document.querySelector('#smsModal button.btn-success');
+        
+        if(!message) return alert("Please type a message");
+        if(!tenantData.phone) return alert("Tenant has no phone number");
+
+        btn.innerHTML = 'Sending...';
+        btn.disabled = true;
+
+        const params = new URLSearchParams({ action: "sendMessage", phone: tenantData.phone, message: message });
+
+        try {
+            await fetch(WEB_APP_URL, { method: "POST", body: params, mode: "no-cors" });
+            setTimeout(() => {
+                alert("Message Sent!");
+                bootstrap.Modal.getInstance(document.getElementById('smsModal')).hide();
+                document.getElementById('smsBody').value = "";
+                btn.innerHTML = '<i class="fa-regular fa-paper-plane me-2"></i> Send Message';
+                btn.disabled = false;
+            }, 1000);
+        } catch(e) {
+            alert("Error sending message.");
+            btn.disabled = false;
+        }
+    };
+
+    window.deleteTenant = async () => {
+        if(!confirm("Delete this tenant permanently?")) return;
+        document.body.style.cursor = "wait";
+        try {
+            await fetch(WEB_APP_URL, { method: "POST", body: new URLSearchParams({ action: "deleteTenant", id: currentTenantID }), mode: "no-cors" });
+            setTimeout(() => { alert("Tenant deleted."); window.location.href = "tenants.html"; }, 1500);
+        } catch(e) { alert("Error deleting."); document.body.style.cursor = "default"; }
+    };
+
+    document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+</script>
+</body>
+</html>

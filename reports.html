@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RentPro — Reports</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root { --rp-primary: #1d4ed8; --rp-light: #f9fafb; --rp-dark: #111827; }
+    body { background: var(--rp-light); font-family: 'Segoe UI', system-ui, sans-serif; }
+    
+    /* SIDEBAR (Same as Dashboard) */
+    .sidebar { width: 250px; min-height: 100vh; background: var(--rp-dark); color: #fff; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; }
+    .nav-link { color: #9ca3af; padding: 14px 25px; display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.05); color: #fff; }
+    .content { margin-left: 250px; padding: 30px; }
+    
+    /* REPORT CARDS */
+    .report-card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); text-align: center; height: 100%; }
+    .card-title-sm { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: 600; margin-bottom: 10px; }
+    .card-value { font-size: 1.8rem; font-weight: 800; color: #111827; margin-bottom: 5px; }
+    
+    /* BORDERS FOR CARDS */
+    .border-b-blue { border-bottom: 4px solid #3b82f6; }
+    .border-b-green { border-bottom: 4px solid #10b981; }
+    .border-b-red { border-bottom: 4px solid #ef4444; }
+    .border-b-cyan { border-bottom: 4px solid #06b6d4; }
+    .border-b-purple { border-bottom: 4px solid #8b5cf6; }
+
+    /* CHARTS */
+    .chart-box { background: white; padding: 20px; border-radius: 12px; height: 350px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+
+    @media (max-width: 768px) { .sidebar { display: none; } .content { margin-left: 0; } }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar-header p-4">
+      <a href="#" class="text-white text-decoration-none h4 fw-bold"><i class="fa-solid fa-building-user me-2"></i> RentPro</a>
+    </div>
+    <nav class="mt-2">
+      <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+      <a href="tenants.html" class="nav-link"><i class="fa-solid fa-users"></i> Tenants</a>
+      <a href="payments.html" class="nav-link"><i class="fa-solid fa-money-bill-wave"></i> Payments</a>
+      <a href="pay.html" class="nav-link"><i class="fa-solid fa-credit-card"></i> Pay Rent</a>
+      <a href="expenses.html" class="nav-link"><i class="fa-solid fa-receipt"></i> Expenses</a>
+      <a href="reports.html" class="nav-link active" style="background: rgba(59, 130, 246, 0.1); color: #fff; border-left-color: var(--rp-accent);"><i class="fa-solid fa-chart-column"></i> Reports</a>
+      <a href="#" class="nav-link" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </nav>
+  </div>
+
+  <main class="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="fw-bold mb-1">Financial Report</h2>
+        <p class="text-muted" id="reportMonth">Loading data...</p>
+      </div>
+      <button class="btn btn-primary" onclick="loadReports()">
+        <i class="fa-solid fa-rotate me-2"></i> Refresh Data
+      </button>
+    </div>
+
+    <h5 class="fw-bold text-primary mb-3 border-start border-4 border-primary ps-3">Monthly Performance (This Month)</h5>
+    
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <div class="report-card border-b-blue">
+          <div class="card-title-sm">Expected Rent</div>
+          <div id="expectedVal" class="card-value">...</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="report-card border-b-green">
+          <div class="card-title-sm">Collected Rent</div>
+          <div id="collectedVal" class="card-value text-success">...</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="report-card border-b-red">
+          <div class="card-title-sm">Outstanding</div>
+          <div id="arrearsVal" class="card-value text-danger">...</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="report-card border-b-cyan">
+          <div class="card-title-sm">Collection Rate</div>
+          <div id="rateVal" class="card-value text-info">...%</div>
+        </div>
+      </div>
+    </div>
+
+    <h5 class="fw-bold text-dark mb-3 border-start border-4 border-dark ps-3">Profit & Loss Overview</h5>
+    <div class="row g-4 mb-5">
+         <div class="col-md-4">
+            <div class="report-card border-b-green">
+              <div class="card-title-sm">Total Revenue</div>
+              <div id="revenueVal" class="card-value text-success">...</div>
+            </div>
+         </div>
+         <div class="col-md-4">
+            <div class="report-card border-b-red">
+              <div class="card-title-sm">Total Expenses</div>
+              <div id="expensesVal" class="card-value text-danger">...</div>
+            </div>
+         </div>
+         <div class="col-md-4">
+            <div class="report-card border-b-purple">
+              <div class="card-title-sm">Net Profit</div>
+              <div id="profitVal" class="card-value text-primary">...</div>
+            </div>
+         </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="chart-box">
+          <h6 class="fw-bold mb-3">Revenue vs Expenses</h6>
+          
+          <canvas id="profitChart"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="chart-box">
+          <h6 class="fw-bold mb-3">Payment Methods</h6>
+          
+          <canvas id="methodChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    // 1. FIREBASE CONFIG
+    const firebaseConfig = {
+        apiKey: "AIzaSyBwJEOW3jVBHLizWiJjT4a_Tay-2yUCZwk",
+        authDomain: "rentpro-saas.firebaseapp.com",
+        projectId: "rentpro-saas",
+        storageBucket: "rentpro-saas.firebasestorage.app",
+        messagingSenderId: "120985965272",
+        appId: "1:120985965272:web:c86eae74aa75460b17fdad",
+        measurementId: "G-LJRKHT6ZTD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    let currentUserUID = null;
+
+    // 2. WEB APP URL (Google Script)
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
+
+    // 3. AUTHENTICATION CHECK
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUserUID = user.uid;
+            
+            // Set Date Title
+            const date = new Date();
+            const monthName = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+            document.getElementById('reportMonth').innerText = `Financial Analysis for ${monthName}`;
+            
+            window.loadReports(); // Start loading
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+
+    // 4. UTILITIES
+    const money = (amount) => {
+        return new Intl.NumberFormat('en-KE', { 
+            style: 'currency', currency: 'KES', minimumFractionDigits: 0 
+        }).format(amount).replace('KES', '').trim();
+    };
+
+    async function apiFetch(params) {
+        if (!WEB_APP_URL) return { success: false };
+        const url = new URL(WEB_APP_URL);
+        Object.keys(params).forEach(k => url.searchParams.append(k, params[k]));
+        try {
+            const res = await fetch(url);
+            return await res.json();
+        } catch (e) { console.error(e); return []; }
+    }
+
+    // 5. GLOBAL CHART VARS
+    let profitChart = null;
+    let methodChart = null;
+
+    // 6. MAIN LOGIC
+    window.loadReports = async function() {
+        if(!currentUserUID) return;
+
+        // Fetch ALL Data
+        const tData = await apiFetch({ action: 'getTenants' });
+        const pData = await apiFetch({ action: 'getPayments' });
+        const eData = await apiFetch({ action: 'getExpenses' });
+        
+        // Normalize Data
+        let tenants = Array.isArray(tData) ? tData : (tData.data || []);
+        let payments = Array.isArray(pData) ? pData : (pData.data || []);
+        let expenses = Array.isArray(eData) ? eData : (eData.data || []);
+
+        // 🔥 CRITICAL: FILTER BY OWNER ID 🔥
+        tenants = tenants.filter(t => t.OwnerID === currentUserUID);
+        // Note: For older data without ID, we assume it's NOT yours to be safe, 
+        // unless you want to show everything. Here we filter strictly.
+        // Make sure you updated payments/expenses sheets with IDs!
+        payments = payments.filter(p => p.OwnerID === currentUserUID);
+        expenses = expenses.filter(e => e.OwnerID === currentUserUID);
+
+        // --- FILTER FOR THIS MONTH ---
+        const today = new Date();
+        const currentMonthPrefix = today.toISOString().slice(0, 7); // "2023-12"
+
+        const monthlyPayments = payments.filter(p => p.Date && p.Date.startsWith(currentMonthPrefix));
+        const monthlyExpenses = expenses.filter(e => e.date && e.date.startsWith(currentMonthPrefix));
+
+        // --- CALCULATIONS ---
+        const totalExpected = tenants.reduce((sum, t) => sum + Number(t.Rent || 0), 0);
+        const totalCollected = monthlyPayments.reduce((sum, p) => sum + Number(p.Amount || 0), 0);
+        const totalExpenseCost = monthlyExpenses.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+        
+        const totalArrears = Math.max(0, totalExpected - totalCollected);
+        const collectionRate = totalExpected > 0 ? Math.round((totalCollected / totalExpected) * 100) : 0;
+        const netProfit = totalCollected - totalExpenseCost;
+
+        // --- UPDATE UI ---
+        document.getElementById('expectedVal').innerText = money(totalExpected);
+        document.getElementById('collectedVal').innerText = money(totalCollected);
+        document.getElementById('arrearsVal').innerText = money(totalArrears);
+        document.getElementById('rateVal').innerText = collectionRate + "%";
+
+        document.getElementById('revenueVal').innerText = money(totalCollected);
+        document.getElementById('expensesVal').innerText = money(totalExpenseCost);
+        document.getElementById('profitVal').innerText = money(netProfit);
+
+        // --- RENDER CHARTS ---
+        renderProfitChart(totalCollected, totalExpenseCost);
+        renderMethodChart(monthlyPayments);
+    }
+
+    // --- CHART 1: Profit vs Expense ---
+    function renderProfitChart(income, expense) {
+        const ctx = document.getElementById('profitChart').getContext('2d');
+        if(profitChart) profitChart.destroy();
+
+        profitChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Income', 'Expenses'],
+                datasets: [{
+                    label: 'Amount (KES)',
+                    data: [income, expense],
+                    backgroundColor: ['#10b981', '#ef4444'],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+
+    // --- CHART 2: Payment Methods ---
+    function renderMethodChart(payments) {
+        const ctx = document.getElementById('methodChart').getContext('2d');
+        const counts = {};
+        payments.forEach(p => {
+            const m = (p.Method || 'Unknown').toUpperCase();
+            counts[m] = (counts[m] || 0) + Number(p.Amount);
+        });
+
+        if(methodChart) methodChart.destroy();
+
+        methodChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(counts),
+                datasets: [{
+                    data: Object.values(counts),
+                    backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'right' } }
+            }
+        });
+    }
+
+    // Logout
+    const logoutBtn = document.getElementById('logoutBtn');
+    if(logoutBtn) logoutBtn.addEventListener('click', () => signOut(auth));
+
+  </script>
+</body>
+</html>

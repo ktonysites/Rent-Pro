@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RentPro — Expenses</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --rp-primary: #1d4ed8;
+      --rp-primary-hover: #1e40af;
+      --rp-dark: #111827;
+      --rp-light: #f9fafb;
+      --rp-border: #e5e7eb;
+      --rp-accent: #3b82f6;
+      --rp-danger: #ef4444;
+    }
+    body { background: var(--rp-light); font-family: 'Segoe UI', system-ui, sans-serif; }
+
+    /* --- SIDEBAR --- */
+    .sidebar { width: 250px; min-height: 100vh; background: var(--rp-dark); color: #fff; position: fixed; top: 0; left: 0; z-index: 100; display: flex; flex-direction: column; box-shadow: 4px 0 24px rgba(0,0,0,0.1); }
+    .sidebar-header { padding: 30px 25px 20px; }
+    .sidebar-brand { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.5px; color: #fff; text-decoration: none; }
+    .nav-link { color: #9ca3af; padding: 14px 25px; display: flex; align-items: center; gap: 12px; transition: all 0.2s; border-left: 4px solid transparent; text-decoration: none; }
+    .nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
+    .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #fff; border-left-color: var(--rp-accent); }
+    .nav-link i { width: 20px; text-align: center; }
+
+    /* --- CONTENT --- */
+    .content { margin-left: 250px; padding: 30px; min-height: 100vh; }
+
+    /* --- SEARCH BAR --- */
+    .search-container { position: relative; max-width: 400px; }
+    .search-input { border-radius: 50px; padding-left: 45px; height: 45px; border: 1px solid var(--rp-border); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+    .search-input:focus { border-color: var(--rp-accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+    .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
+
+    /* Card & Table */
+    .card-hero { background: #fff; border-radius: 16px; padding: 0; box-shadow: 0 2px 12px rgba(0,0,0,0.03); border: 1px solid var(--rp-border); overflow: hidden; }
+    .table thead th {
+      background: #f8fafc; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; padding: 16px 24px; border-bottom: 1px solid var(--rp-border);
+    }
+    .table td { vertical-align: middle; color: #334155; padding: 16px 24px; border-bottom: 1px solid var(--rp-border); }
+    .table tbody tr:hover { background-color: #fcfdfe; }
+    .table tbody tr:last-child td { border-bottom: none; }
+
+    /* Badges & Text */
+    .badge-category {
+      font-weight: 600; padding: 6px 12px; border-radius: 30px; font-size: 0.75rem;
+      display: inline-flex; align-items: center; gap: 6px; border: 1px solid transparent;
+    }
+    /* Dynamic Badge Colors */
+    .cat-maintenance { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+    .cat-utilities { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .cat-cleaning { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+    .cat-tax { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+    .cat-salary { background: #fdf4ff; color: #a21caf; border-color: #f5d0fe; }
+    .cat-other { background: #f8fafc; color: #475569; border-color: #e2e8f0; }
+
+    .text-amount-danger { color: var(--rp-danger); font-weight: 700; font-size: 1rem; }
+    .desc-text { font-weight: 500; color: var(--rp-dark); }
+
+    /* Buttons */
+    .btn-icon { cursor: pointer; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; border: none; transition: all 0.2s; }
+    .btn-edit { background: #eff6ff; color: var(--rp-accent); }
+    .btn-delete { background: #fef2f2; color: #ef4444; }
+    .btn-edit:hover { background: var(--rp-accent); color: #fff; box-shadow: 0 4px 12px rgba(59,130,246,0.2); }
+    .btn-delete:hover { background: #ef4444; color: #fff; box-shadow: 0 4px 12px rgba(239,68,68,0.2); }
+
+    /* Offline Indicator */
+    .offline-badge { background:#fff7ed; color:#c2410c; padding:6px 14px; border-radius:20px; font-weight:600; border: 1px solid #ffedd5; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .content { margin-left: 0; padding: 20px; }
+      .sidebar { display: none; }
+      .table thead { display: none; }
+      .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+      .table tr { margin-bottom: 15px; border: 1px solid var(--rp-border); border-radius: 12px; padding: 15px; }
+      .table td { text-align: right; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; border: none; }
+      .table td::before { content: attr(data-label); float: left; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <a href="#" class="sidebar-brand"><i class="fa-solid fa-building-user me-2"></i> RentPro</a>
+    </div>
+    <nav class="mt-2">
+        <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+        <a href="tenants.html" class="nav-link"><i class="fa-solid fa-users"></i> Tenants</a>
+        <a href="payments.html" class="nav-link"><i class="fa-solid fa-money-bill-wave"></i> Payments</a>
+        <a href="pay.html" class="nav-link"><i class="fa-solid fa-credit-card"></i> Pay Rent</a>
+        <a href="expenses.html" class="nav-link active"><i class="fa-solid fa-receipt"></i> Expenses</a>
+        <a href="reports.html" class="nav-link"><i class="fa-solid fa-chart-column"></i> Reports</a>
+        <a href="#" class="nav-link" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </nav>
+  </div>
+
+  <main class="content">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+      <div>
+        <h2 class="fw-bold text-dark mb-1">Expenses</h2>
+        <div class="text-muted small" id="statusMessage"><i class="fa-solid fa-rotate fa-spin me-1"></i> Syncing...</div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-light border shadow-sm" id="refreshBtn" title="Refresh Data">
+            <i class="fa-solid fa-rotate-right"></i>
+        </button>
+        <button class="btn btn-primary shadow-sm px-4" id="addExpenseBtn">
+            <i class="fa-solid fa-plus me-2"></i> Add Expense
+        </button>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="search-container">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="searchInput" class="form-control search-input" placeholder="Search description or category...">
+        </div>
+      </div>
+    </div>
+
+    <div class="card-hero">
+      <div class="table-responsive">
+        <table class="table align-middle mb-0"> 
+          <thead>
+            <tr>
+                <th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="expenseTableBody">
+            <tr><td colspan="5" class="text-center p-5 text-muted"><div class="spinner-border text-primary mb-3" role="status"></div><div>Loading expenses...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade" id="expenseModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <form id="expenseForm" class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title fw-bold" id="expenseModalTitle">Add Expense</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+            <input type="hidden" id="expenseId">
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-uppercase text-muted">Date</label>
+              <input type="date" id="expenseDate" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold small text-uppercase text-muted">Category</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fa-solid fa-tag"></i></span>
+                    <select id="expenseCategory" class="form-select" required>
+                        <option value="" disabled selected>Select category...</option>
+                        <option value="Maintenance">Maintenance & Repairs</option>
+                        <option value="Utilities">Utilities (Water/Elec)</option>
+                        <option value="Cleaning">Cleaning Services</option>
+                        <option value="Tax">Property Tax / Rates</option>
+                        <option value="Salary">Staff Salary</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-uppercase text-muted">Description</label>
+              <input id="expenseDesc" class="form-control" placeholder="e.g., Plumber fix" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-uppercase text-muted">Amount (Ksh)</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light">Ksh</span>
+                <input type="number" id="expenseAmount" class="form-control" placeholder="0.00" required>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary px-4">Save Expense</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    // 1. FIREBASE CONFIG
+    const firebaseConfig = {
+        apiKey: "AIzaSyBwJEOW3jVBHLizWiJjT4a_Tay-2yUCZwk",
+        authDomain: "rentpro-saas.firebaseapp.com",
+        projectId: "rentpro-saas",
+        storageBucket: "rentpro-saas.firebasestorage.app",
+        messagingSenderId: "120985965272",
+        appId: "1:120985965272:web:c86eae74aa75460b17fdad",
+        measurementId: "G-LJRKHT6ZTD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    let currentUserUID = null;
+
+    // 2. WEB APP URL (Google Script)
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
+
+    // 3. CORE UTILITIES
+    const $ = (id) => document.getElementById(id);
+    const getModal = (id) => bootstrap.Modal.getOrCreateInstance($(id));
+    const formatMoney = (n) => new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits:0 }).format(n).replace('KES','').trim();
+    const escapeHtml = (text) => {
+        if (!text) return "";
+        return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    };
+
+    async function apiFetch(params, method='GET', body=null) {
+        if (!WEB_APP_URL || WEB_APP_URL.includes("...")) {
+            alert("Web App URL is missing in the code!");
+            return { success: false };
+        }
+        const url = new URL(WEB_APP_URL);
+        Object.keys(params).forEach(k => url.searchParams.append(k, params[k]));
+        try {
+            const opts = method === 'POST' ? { method: 'POST', body: JSON.stringify(body) } : {};
+            const res = await fetch(url, opts);
+            return await res.json();
+        } catch (e) { console.error(e); return { success: false, isOffline: true }; }
+    }
+
+    // 4. MAIN STATE & AUTH LOGIC
+    let expenses = [];
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUserUID = user.uid;
+            loadData(); // Load data only after we have the UID
+        } else {
+            window.location.href = "index.html"; // Kick out if not logged in
+        }
+    });
+
+    async function loadData() {
+        $("statusMessage").innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
+        
+        // Fetch Expenses
+        const res = await apiFetch({ action: 'getExpenses' });
+        
+        if (res && (res.success === undefined || res.success)) { 
+            const data = Array.isArray(res) ? res : (res.data || []);
+            
+            // 🔥 FILTER BY OWNER ID 🔥
+            expenses = data.filter(e => e.OwnerID === currentUserUID);
+            
+            localStorage.setItem('rentpro_expenses', JSON.stringify(expenses));
+            $("statusMessage").innerHTML = '<i class="fa-solid fa-check text-success"></i> Synced';
+        } else {
+            // Offline Fallback
+            const saved = localStorage.getItem('rentpro_expenses');
+            if(saved) expenses = JSON.parse(saved);
+            $("statusMessage").innerHTML = '<span class="text-danger">Offline Mode</span>';
+        }
+
+        renderTable();
+    }
+
+    function renderTable() {
+        const tbody = $("expenseTableBody");
+        const query = $('searchInput').value.toLowerCase();
+
+        // Filter by Search Query
+        const filtered = expenses.filter(e => {
+            return (e.description || '').toLowerCase().includes(query) || 
+                   (e.category || '').toLowerCase().includes(query) ||
+                   String(e.amount).includes(query);
+        });
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center p-5 text-muted"><p>No expenses found.</p></td></tr>`;
+            return;
+        }
+
+        // Sort Newest First
+        filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        tbody.innerHTML = filtered.map(e => {
+            // Badge Logic
+            let catClass = 'cat-other';
+            let icon = 'fa-tag';
+            const cat = (e.category || '').toLowerCase();
+            
+            if(cat.includes('maint')) { catClass = 'cat-maintenance'; icon = 'fa-screwdriver-wrench'; }
+            else if(cat.includes('util')) { catClass = 'cat-utilities'; icon = 'fa-bolt'; }
+            else if(cat.includes('clean')) { catClass = 'cat-cleaning'; icon = 'fa-broom'; }
+            else if(cat.includes('tax')) { catClass = 'cat-tax'; icon = 'fa-building-columns'; }
+            else if(cat.includes('salary')) { catClass = 'cat-salary'; icon = 'fa-user-tie'; }
+
+            // Date Display
+            let dateDisplay = e.date;
+            try { dateDisplay = new Date(e.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); } catch(err){}
+
+            return `
+            <tr>
+                <td data-label="Date">${dateDisplay}</td>
+                <td data-label="Category">
+                    <span class="badge-category ${catClass}"><i class="fa-solid ${icon}"></i> ${escapeHtml(e.category)}</span>
+                </td>
+                <td data-label="Description" class="desc-text">${escapeHtml(e.description)}</td>
+                <td data-label="Amount" class="text-amount-danger">- Ksh ${formatMoney(e.amount)}</td>
+                <td data-label="Actions" class="text-end">
+                    <button class="btn-icon btn-edit me-1" onclick="window.editExpense('${e.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="btn-icon btn-delete" onclick="window.deleteExpense('${e.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // 5. EVENT LISTENERS & ACTIONS
+    $('searchInput').addEventListener('input', renderTable);
+    $('refreshBtn').addEventListener('click', loadData);
+    
+    // Add Button
+    $('addExpenseBtn').addEventListener('click', () => {
+        $("expenseForm").reset();
+        $("expenseId").value = "";
+        $("expenseDate").value = new Date().toISOString().split('T')[0];
+        $("expenseModalTitle").innerText = "Add Expense";
+        getModal("expenseModal").show();
+    });
+
+    // Form Submit
+    $("expenseForm").addEventListener("submit", async e => {
+        e.preventDefault();
+        const btn = e.submitter; 
+        if(btn) { btn.disabled = true; btn.innerHTML = 'Saving...'; }
+        
+        const expense = {
+            id: $("expenseId").value || null,
+            date: $("expenseDate").value,
+            category: $("expenseCategory").value,
+            description: $("expenseDesc").value,
+            amount: Number($("expenseAmount").value),
+            OwnerID: currentUserUID // 🔥 ATTACHING OWNER ID 🔥
+        };
+
+        const action = expense.id ? 'updateExpense' : 'addExpense';
+        const res = await apiFetch({ action: action }, 'POST', expense);
+
+        if (res && (res.status === 'success' || res.success)) {
+            getModal("expenseModal").hide();
+            loadData();
+        } else {
+            alert("Error: " + (res.message || "Save failed"));
+        }
+        
+        if(btn) { btn.disabled = false; btn.innerText = "Save Expense"; }
+    });
+
+    // Global Functions for buttons in innerHTML
+    window.editExpense = function(id) {
+        const e = expenses.find(x => String(x.id) === String(id));
+        if(!e) return;
+        $("expenseId").value = e.id;
+        try { $("expenseDate").value = new Date(e.date).toISOString().split('T')[0]; } catch(err) { $("expenseDate").value = ""; }
+        $("expenseCategory").value = e.category;
+        $("expenseDesc").value = e.description;
+        $("expenseAmount").value = e.amount;
+        $("expenseModalTitle").innerText = "Edit Expense";
+        getModal("expenseModal").show();
+    };
+
+    window.deleteExpense = async function(id) {
+        if (!confirm("Delete this expense?")) return;
+        
+        $("statusMessage").innerHTML = 'Deleting...';
+        
+        // Optimistic UI update
+        expenses = expenses.filter(e => String(e.id) !== String(id));
+        renderTable();
+        
+        const res = await apiFetch({ action: 'deleteExpense' }, 'POST', { id });
+
+        if (res && (res.status === 'success' || res.success)) {
+            $("statusMessage").innerHTML = '<i class="fa-solid fa-check text-success"></i> Deleted';
+            setTimeout(loadData, 1000);
+        } else {
+            alert("Server Error: " + (res.message || 'Could not delete'));
+            loadData(); // Revert on error
+        }
+    };
+
+    // Logout
+    if($('logoutBtn')) $('logoutBtn').addEventListener('click', () => signOut(auth));
+
+</script>
+</body>
+</html>

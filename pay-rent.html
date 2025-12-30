@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RentPro — Pay Rent</title>  
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* --- MODERN NAVY THEME --- */
+    :root { 
+        --primary-navy: #0d1b2a; 
+        --secondary-navy: #1b263b; 
+        --accent-blue: #415a77; 
+        --light-bg: #f4f6f9;
+        --mpesa-green: #39b54a;
+        --sidebar-width: 250px;
+    }
+
+    body { 
+        background: var(--light-bg); 
+        font-family: 'Segoe UI', system-ui, sans-serif; 
+        color: var(--primary-navy);
+    }
+
+    /* --- SIDEBAR --- */
+    .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--primary-navy); color: #fff; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; z-index: 1000; }
+    .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-link { color: #94a3b8; padding: 12px 20px; display: flex; align-items: center; gap: 10px; text-decoration: none; transition: 0.2s; font-size: 0.9rem; }
+    .nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
+    .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #fff; border-right: 3px solid #3b82f6; }
+    
+    /* --- CONTENT AREA --- */
+    .content { margin-left: var(--sidebar-width); padding: 40px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+
+    /* --- PAY CARD --- */
+    .pay-card { 
+        max-width: 500px; 
+        width: 100%; 
+        border: none; 
+        border-radius: 20px; 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08); 
+        overflow: hidden; 
+        background: #fff; 
+    }
+    
+    .card-header { 
+        background: var(--primary-navy); 
+        color: white; 
+        padding: 30px; 
+        text-align: center; 
+    }
+
+    .mpesa-box {
+        background-color: #f0fff4;
+        border: 2px dashed var(--mpesa-green);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .step-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+    }
+    .step-num {
+        background: var(--mpesa-green);
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: bold;
+        font-size: 0.8rem;
+        margin-right: 10px;
+        flex-shrink: 0;
+    }
+
+    .highlight-text { font-weight: 700; color: var(--primary-navy); font-size: 1.1rem; }
+
+    .btn-navy { background: var(--primary-navy); color: white; border-radius: 10px; padding: 12px; width: 100%; font-weight: 600; }
+    .btn-navy:hover { background: var(--secondary-navy); color: white; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .content { margin-left: 0; padding: 20px; }
+      .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar-header"><h5 class="m-0 fw-bold"><i class="fa-solid fa-building me-2"></i> RentPro</h5></div>
+    <nav class="mt-2">
+        <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+        <a href="tenants.html" class="nav-link"><i class="fa-solid fa-users"></i> Tenants</a>
+        <a href="payments.html" class="nav-link"><i class="fa-solid fa-money-bill-wave"></i> Payments</a>
+        <a href="pay-rent.html" class="nav-link active"><i class="fa-solid fa-credit-card"></i> Pay Rent</a>
+        <a href="expenses.html" class="nav-link"><i class="fa-solid fa-receipt"></i> Expenses</a>
+        <a href="reports.html" class="nav-link"><i class="fa-solid fa-chart-simple"></i> Reports</a>
+        
+        <div class="mt-auto border-top border-secondary pt-2">
+           <a href="index.html" class="nav-link text-danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+    </nav>
+  </div>
+
+  <main class="content">
+    
+    <div class="pay-card card">
+      <div class="card-header">
+        <h3 class="fw-bold mb-1">Pay Rent</h3>
+        <p class="mb-0 opacity-75 small">Find tenant details & payment instructions</p>
+      </div>
+
+      <div class="card-body p-4">
+        
+        <div id="stepSearch">
+          <label class="form-label fw-bold text-uppercase small text-muted">Find Tenant Account</label>
+          <div class="input-group mb-4">
+            <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+            <input type="text" id="searchInput" class="form-control form-control-lg border-start-0 ps-0" placeholder="Name, House No, or Phone...">
+          </div>
+          <button class="btn btn-navy shadow-sm" id="findBtn">
+            Find My Account
+          </button>
+        </div>
+
+        <div id="loader" class="text-center py-4 d-none">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted small">Searching...</p>
+        </div>
+
+        <div id="stepPay" class="d-none">
+          <div class="text-center mb-4">
+              <h4 id="displayName" class="fw-bold mb-1">Tenant Name</h4>
+              <span class="badge bg-secondary px-3 py-2 rounded-pill" id="displayHouse">House</span>
+          </div>
+
+          <div class="row text-center mb-3">
+              <div class="col">
+                  <small class="text-muted d-block">Monthly Rent</small>
+                  <span class="h4 fw-bold text-dark" id="displayRent">0</span>
+              </div>
+          </div>
+
+          <div class="mpesa-box">
+             <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-mobile-screen-button me-2"></i> How to Pay via M-Pesa</h6>
+             
+             <div class="step-item">
+                 <span class="step-num">1</span>
+                 <span>Go to <b>M-Pesa</b> > <b>Lipa na M-Pesa</b></span>
+             </div>
+             <div class="step-item">
+                 <span class="step-num">2</span>
+                 <span>Select <b>Paybill</b></span>
+             </div>
+             <div class="step-item">
+                 <span class="step-num">3</span>
+                 <span>Enter Business No: <span class="highlight-text">247247</span></span>
+             </div>
+             <div class="step-item">
+                 <span class="step-num">4</span>
+                 <span>Enter Account No: <span class="highlight-text text-danger" id="mpesaAccount">---</span></span>
+             </div>
+             <div class="step-item">
+                 <span class="step-num">5</span>
+                 <span>Enter Amount: <span class="highlight-text" id="mpesaAmount">---</span></span>
+             </div>
+             <div class="step-item">
+                 <span class="step-num">6</span>
+                 <span>Enter PIN and Send</span>
+             </div>
+          </div>
+          
+          <div class="text-center mt-4">
+             <p class="text-muted small mb-3 fst-italic">
+                <i class="fa-solid fa-info-circle me-1"></i> 
+                You will receive an SMS confirmation once payment is processed.
+             </p>
+             <button class="btn btn-outline-secondary w-100" onclick="resetSearch()">
+                 <i class="fa-solid fa-arrow-left me-1"></i> Check Another House
+             </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBwJEOW3jVBHLizWiJjT4a_Tay-2yUCZwk",
+        authDomain: "rentpro-saas.firebaseapp.com",
+        projectId: "rentpro-saas",
+        storageBucket: "rentpro-saas.firebasestorage.app",
+        messagingSenderId: "120985965272",
+        appId: "1:120985965272:web:c86eae74aa75460b17fdad",
+        measurementId: "G-LJRKHT6ZTD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    let currentUserUID = null;
+
+    // YOUR GOOGLE SCRIPT URL
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
+
+    // 1. AUTH CHECK (Admins Only for Kiosk Mode)
+    // Note: If you want this purely public without admin login, remove the auth check.
+    // However, tenants cannot be filtered by "OwnerID" if no one is logged in.
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUserUID = user.uid;
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+
+    // 2. SEARCH FUNCTION
+    document.getElementById('findBtn').addEventListener('click', async () => {
+        const inputVal = document.getElementById('searchInput').value.toLowerCase().trim();
+        if(!inputVal) return alert("Please enter your Name, House No, or Phone.");
+
+        document.getElementById('stepSearch').classList.add('d-none');
+        document.getElementById('loader').classList.remove('d-none');
+
+        try {
+            const res = await fetch(`${WEB_APP_URL}?action=getTenants&t=${Date.now()}`);
+            const json = await res.json();
+            const allTenants = Array.isArray(json) ? json : json.data;
+
+            // Security: Only search tenants belonging to the logged-in admin
+            const myTenants = allTenants.filter(t => t.OwnerID === currentUserUID);
+
+            const found = myTenants.find(t => 
+                (t.Name && t.Name.toLowerCase().includes(inputVal)) || 
+                (t.House && String(t.House).toLowerCase() === inputVal) ||
+                (t.PhoneNumber && String(t.PhoneNumber).includes(inputVal)) ||
+                (t.Phone && String(t.Phone).includes(inputVal))
+            );
+
+            document.getElementById('loader').classList.add('d-none');
+
+            if(found) {
+                showTenantDetails(found);
+            } else {
+                alert("Tenant not found! Please check details.");
+                document.getElementById('stepSearch').classList.remove('d-none');
+            }
+
+        } catch(e) {
+            console.error(e);
+            alert("Error connecting to database.");
+            document.getElementById('loader').classList.add('d-none');
+            document.getElementById('stepSearch').classList.remove('d-none');
+        }
+    });
+
+    // 3. DISPLAY DETAILS
+    function showTenantDetails(t) {
+        const rent = Number(t.Rent || 0).toLocaleString();
+        const house = t.House || "Unknown";
+
+        document.getElementById('displayName').innerText = t.Name;
+        document.getElementById('displayHouse').innerText = "House " + house;
+        document.getElementById('displayRent').innerText = "KES " + rent;
+
+        document.getElementById('mpesaAccount').innerText = `275515#${house}`;
+        document.getElementById('mpesaAmount').innerText = rent;
+
+        document.getElementById('stepPay').classList.remove('d-none');
+    }
+
+    // 4. RESET / BACK
+    window.resetSearch = () => {
+        document.getElementById('stepPay').classList.add('d-none');
+        document.getElementById('stepSearch').classList.remove('d-none');
+        document.getElementById('searchInput').value = "";
+    };
+
+    document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+
+</script>
+</body>
+</html>

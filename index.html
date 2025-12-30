@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentPro SaaS - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* --- RENTPRO CUSTOM BRANDING --- */
+        :root {
+            --rp-primary-dark: #0a2351; 
+            --rp-primary-light: #2563eb; 
+            --rp-bg-light: #f8f9fa;
+        }
+        body, html { height: 100%; font-family: 'Segoe UI', sans-serif; background-color: var(--rp-bg-light); }
+        .login-container { min-height: 100vh; }
+        .brand-sidebar {
+            background: linear-gradient(rgba(10, 35, 81, 0.9), rgba(10, 35, 81, 0.9)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1470&q=80');
+            background-size: cover; color: white; display: flex; flex-direction: column; justify-content: center; padding: 3rem;
+        }
+        .form-side { display: flex; align-items: center; justify-content: center; padding: 2rem; background-color: white; }
+        .form-box { width: 100%; max-width: 450px; }
+        .text-brand { color: var(--rp-primary-dark); font-weight: 700; }
+        .btn-brand { background-color: var(--rp-primary-dark); border-color: var(--rp-primary-dark); padding: 12px; font-weight: 600; }
+        .btn-brand:hover { background-color: var(--rp-primary-light); }
+        @media (max-width: 768px) { .brand-sidebar { display: none; } }
+    </style>
+</head>
+<body>
+
+    <div id="loadingScreen" class="d-none position-fixed w-100 h-100 bg-white d-flex flex-column justify-content-center align-items-center" style="z-index: 9999;">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+        <p class="mt-3 text-brand lead">Checking Subscription Status...</p>
+    </div>
+
+    <div class="container-fluid p-0 overflow-hidden">
+        <div class="row g-0 login-container">
+            
+            <div class="col-md-6 col-lg-7 brand-sidebar d-none d-md-flex">
+                <div>
+                    <h1><i class="bi bi-building-check me-2"></i>RentPro SaaS</h1>
+                    <p class="lead mt-3">The #1 Property Management Tool in Kenya.</p>
+                    <ul class="list-unstyled mt-4">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> SMS Rent Reminders</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Automatic Revenue Reports</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Secure Cloud Storage</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-5 form-side shadow-lg">
+                <div class="form-box">
+                    
+                    <div id="authSection">
+                        <h2 class="mb-3 text-brand" id="authTitle">Welcome Back</h2>
+                        <p class="text-muted mb-4">Sign in to manage your properties.</p>
+                        <div id="authAlert" class="alert alert-danger d-none shadow-sm border-0"></div>
+
+                        <form id="authForm">
+                            <div class="form-floating mb-3">
+                                <input type="email" id="email" class="form-control" placeholder="name@example.com" required>
+                                <label for="email">Email Address</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" id="password" class="form-control" placeholder="Password" required>
+                                <label for="password">Password</label>
+                            </div>
+                            <div class="text-end mb-4">
+                                <a href="#" id="forgotPasswordBtn" class="text-decoration-none small">Forgot Password?</a>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-brand w-100" id="submitBtn">Sign In</button>
+                        </form>
+
+                        <div class="text-center mt-4">
+                            <span class="text-muted">New Landlord?</span>
+                            <a href="#" id="toggleAuth" class="ms-2 fw-bold text-decoration-none">Create Account</a>
+                        </div>
+                    </div>
+
+                    <div id="paywallSection" class="d-none text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-calendar-check text-success" style="font-size: 4rem;"></i>
+                        </div>
+                        <h2 class="text-brand">Annual License Required</h2>
+                        <p class="text-muted">Your subscription has expired or is inactive.</p>
+                        
+                        <div class="card border-primary shadow-sm bg-light my-4 p-4">
+                             <h5 class="mb-1 text-uppercase text-muted small fw-bold">Yearly Access Pass</h5>
+                             <h2 class="text-primary fw-bold my-2">KES 1,000 <span class="fs-6 text-muted">/ year</span></h2>
+                             <p class="small text-muted mb-0">Less than KES 85 per month.</p>
+                             <hr>
+                             <ul class="list-unstyled text-start small mx-auto" style="max-width: 200px;">
+                                <li class="mb-1"><i class="bi bi-check text-success"></i> Unlimited Tenants</li>
+                                <li class="mb-1"><i class="bi bi-check text-success"></i> SMS Integration</li>
+                                <li class="mb-1"><i class="bi bi-check text-success"></i> Priority Support</li>
+                             </ul>
+                        </div>
+
+                        <button id="btnPayWall" class="btn btn-success btn-lg w-100 py-3 fw-bold shadow-sm">
+                            <i class="bi bi-mpesa me-2"></i> Subscribe with M-Pesa
+                        </button>
+                        <p id="payStatus" class="mt-3 text-muted small fw-bold"></p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBwJEOW3jVBHLizWiJjT4a_Tay-2yUCZwk",
+            authDomain: "rentpro-saas.firebaseapp.com",
+            projectId: "rentpro-saas",
+            storageBucket: "rentpro-saas.firebasestorage.app",
+            messagingSenderId: "120985965272",
+            appId: "1:120985965272:web:c86eae74aa75460b17fdad",
+            measurementId: "G-LJRKHT6ZTD"
+        };
+        
+        // 🔴🔴 STEP 1: SWITCH TO LIVE KEY HERE WHEN READY 🔴🔴
+        const INTASEND_PUB_KEY = "ISPubKey_test_cd0c94df-1aba-4101-a531-0d21ecc04817"; 
+        const IS_LIVE = false; // Change to true when using Live Key
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const authSection = document.getElementById('authSection');
+        const paywallSection = document.getElementById('paywallSection');
+        const loadingScreen = document.getElementById('loadingScreen');
+        let currentUser = null;
+
+        // --- GATEKEEPER (YEARLY LOGIC) ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                authSection.classList.add('d-none');
+                loadingScreen.classList.remove('d-none'); 
+
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+
+                loadingScreen.classList.add('d-none'); 
+
+                if (userSnap.exists()) {
+                    const data = userSnap.data();
+                    
+                    // Check if Premium AND Date is valid
+                    const now = new Date();
+                    let expiryDate = data.expiryDate ? new Date(data.expiryDate) : null;
+                    
+                    // Allow access if:
+                    // 1. isPremium is true AND
+                    // 2. Expiry Date exists AND is in the future
+                    if (data.isPremium === true && expiryDate && now < expiryDate) {
+                        window.location.href = "dashboard.html"; 
+                    } else {
+                        // Expired or New User -> Show Paywall
+                        paywallSection.classList.remove('d-none');
+                    }
+                } else {
+                    // New user record doesn't exist yet -> Show Paywall
+                    paywallSection.classList.remove('d-none');
+                }
+            } else {
+                currentUser = null;
+                authSection.classList.remove('d-none');
+                paywallSection.classList.add('d-none');
+            }
+        });
+
+        // --- PAYMENT LOGIC (CALCULATE 1 YEAR) ---
+        const payBtn = document.getElementById('btnPayWall');
+        payBtn.addEventListener('click', () => {
+            
+            // Simulation Fallback (Delete this block when fully Live if you want)
+            if (typeof window.IntaSend === 'undefined') {
+                window.IntaSend = class {
+                    constructor(options) { this.options = options; }
+                    on(event, callback) { if(event === 'COMPLETE') this.successCb = callback; }
+                    pay(details) {
+                        if(confirm("⚠️ SIMULATION MODE ⚠️\n\nClick OK to simulate a KES 1,000 Payment.")) {
+                            this.successCb({status: "COMPLETED", message: "Simulated Success"});
+                        }
+                    }
+                }
+            }
+
+            const intasend = new window.IntaSend({ publicAPIKey: INTASEND_PUB_KEY, live: IS_LIVE });
+
+            intasend.on("COMPLETE", async (results) => {
+                console.log("Payment Success", results);
+                
+                // 🔥 CALCULATE EXPIRY DATE (TODAY + 365 DAYS) 🔥
+                const nextYear = new Date();
+                nextYear.setFullYear(nextYear.getFullYear() + 1);
+
+                await setDoc(doc(db, "users", currentUser.uid), {
+                    email: currentUser.email,
+                    isPremium: true,
+                    subscriptionDate: serverTimestamp(),
+                    expiryDate: nextYear.toISOString(), // Store as string
+                    amountPaid: 1000
+                }, { merge: true });
+                
+                alert("Subscription Active! Valid until " + nextYear.toLocaleDateString());
+                window.location.href = "dashboard.html";
+            });
+
+            // 🔴 PRICE IS SET HERE 🔴
+            intasend.pay({ 
+                amount: 1000, // KES 1,000 per year
+                currency: "KES", 
+                email: currentUser.email, 
+                first_name: "Landlord", 
+                phone_number: "254700000000" 
+            });
+        });
+
+        // --- AUTH FORMS ---
+        const authForm = document.getElementById('authForm');
+        const alertBox = document.getElementById('authAlert');
+        let isLoginMode = true;
+
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const action = isLoginMode 
+                ? signInWithEmailAndPassword(auth, email, password)
+                : createUserWithEmailAndPassword(auth, email, password);
+
+            action.catch(error => {
+                alertBox.className = 'alert alert-danger shadow-sm border-0';
+                alertBox.innerText = error.message;
+                alertBox.classList.remove('d-none');
+            });
+        });
+
+        document.getElementById('toggleAuth').addEventListener('click', (e) => {
+            e.preventDefault(); isLoginMode = !isLoginMode;
+            document.getElementById('authTitle').innerText = isLoginMode ? "Welcome Back" : "Create Account";
+            document.getElementById('submitBtn').innerText = isLoginMode ? "Sign In" : "Sign Up";
+            alertBox.classList.add('d-none');
+        });
+
+        // Forgot Password
+        document.getElementById('forgotPasswordBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            if (!email) { alert("Please enter your email first."); return; }
+            try { await sendPasswordResetEmail(auth, email); alert("Reset email sent!"); }
+            catch (error) { alert(error.message); }
+        });
+    </script>
+</body>
+</html>

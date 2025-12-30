@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RentPro — Tenants</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root { 
+        --rp-primary: #3b82f6; 
+        --rp-primary-dark: #2563eb;
+        --rp-dark: #0f172a; 
+        --rp-bg: #f1f5f9;
+        --rp-text: #334155;
+        --rp-border: #e2e8f0;
+        --sidebar-width: 260px;
+    }
+    
+    body { 
+        background: var(--rp-bg); 
+        font-family: 'Inter', sans-serif; 
+        color: var(--rp-text);
+        font-size: 0.95rem;
+    }
+    
+    /* --- SIDEBAR --- */
+    .sidebar { 
+        width: var(--sidebar-width); 
+        min-height: 100vh; 
+        background: var(--rp-dark); 
+        color: #fff; 
+        position: fixed; 
+        top: 0; left: 0; 
+        display: flex; flex-direction: column; 
+        z-index: 1000; 
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar-brand { 
+        padding: 24px 30px; 
+        display: flex; align-items: center; gap: 12px; 
+        border-bottom: 1px solid rgba(255,255,255,0.08); 
+        margin-bottom: 15px;
+    }
+    
+    .nav-link { 
+        color: #94a3b8; 
+        padding: 14px 30px; 
+        display: flex; align-items: center; gap: 14px; 
+        text-decoration: none; 
+        transition: all 0.2s; 
+        font-weight: 500;
+        border-right: 3px solid transparent;
+    }
+    
+    .nav-link:hover { color: #fff; background: rgba(255,255,255,0.03); }
+    .nav-link.active { 
+        background: rgba(59, 130, 246, 0.1); 
+        color: #60a5fa; 
+        border-right-color: #60a5fa; 
+    }
+    .nav-link i { width: 20px; text-align: center; font-size: 1.1em; }
+    
+    /* --- CONTENT AREA --- */
+    .content { margin-left: var(--sidebar-width); padding: 40px; }
+    
+    .page-header {
+        display: flex; justify-content: space-between; align-items: end; margin-bottom: 30px;
+    }
+    .page-title { font-size: 1.75rem; font-weight: 700; color: #1e293b; margin: 0; letter-spacing: -0.02em; }
+    .page-subtitle { color: #64748b; margin-top: 4px; font-size: 0.95rem; }
+
+    /* --- TABLE CARD --- */
+    .card-table { 
+        background: #fff; 
+        border: 1px solid var(--rp-border); 
+        border-radius: 16px; 
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+        overflow: hidden; 
+    }
+    
+    .table { margin-bottom: 0; }
+    
+    .table thead th { 
+        background: #f8fafc; 
+        font-weight: 600; 
+        text-transform: uppercase; 
+        font-size: 0.75rem; 
+        letter-spacing: 0.05em;
+        color: #64748b; 
+        border-bottom: 1px solid var(--rp-border); 
+        padding: 18px 24px; 
+    }
+    
+    .table tbody td { 
+        padding: 18px 24px; 
+        border-bottom: 1px solid var(--rp-border); 
+        vertical-align: middle; 
+        color: #334155;
+    }
+    
+    .table tbody tr:last-child td { border-bottom: none; }
+    
+    /* Row Hover & Pointer */
+    .tenant-row { transition: background 0.15s ease; cursor: pointer; }
+    .tenant-row:hover { background-color: #f8fafc; }
+
+    /* Custom Badges & Avatars */
+    .avatar-initial {
+        width: 36px; height: 36px;
+        background: #eff6ff; color: var(--rp-primary);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 600; font-size: 0.9rem;
+        margin-right: 12px;
+    }
+
+    .badge-pill {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .badge-house { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+    .badge-id { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
+
+    /* --- BUTTONS & MODAL --- */
+    .btn-primary-custom {
+        background-color: var(--rp-primary);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+        transition: transform 0.1s;
+    }
+    .btn-primary-custom:hover { background-color: var(--rp-primary-dark); transform: translateY(-1px); }
+    .btn-primary-custom:active { transform: translateY(0); }
+
+    .modal-content { border-radius: 16px; border: none; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+    .modal-header { border-bottom: 1px solid #f1f5f9; padding: 20px 24px; }
+    .modal-body { padding: 24px; }
+    .form-control { 
+        padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; 
+        background-color: #fcfcfc;
+    }
+    .form-control:focus { border-color: var(--rp-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); background: #fff; }
+    .form-label { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: #64748b; letter-spacing: 0.02em; }
+
+    /* Loading Spinner */
+    .loading-container { padding: 60px; text-align: center; color: #94a3b8; }
+    .loading-spinner { color: var(--rp-primary); font-size: 2rem; margin-bottom: 15px; }
+
+    @media (max-width: 768px) { .content { margin-left: 0; padding: 20px; } .sidebar { display: none; } }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar-brand">
+       <i class="fa-solid fa-building fa-lg text-primary"></i>
+       <h4 class="m-0 fw-bold tracking-tight">RentPro</h4>
+    </div>
+    <nav class="mt-2">
+        <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+        <a href="tenants.html" class="nav-link active"><i class="fa-solid fa-users"></i> Tenants</a>
+        <a href="payments.html" class="nav-link"><i class="fa-solid fa-money-bill-wave"></i> Payments</a>
+        <a href="pay-rent.html" class="nav-link"><i class="fa-regular fa-credit-card"></i> Pay Rent</a>
+        <a href="expenses.html" class="nav-link"><i class="fa-solid fa-receipt"></i> Expenses</a>
+        <a href="reports.html" class="nav-link"><i class="fa-solid fa-chart-simple"></i> Reports</a>
+        
+        <div class="mt-auto border-top border-secondary pt-2">
+           <a href="index.html" class="nav-link text-danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+    </nav>
+  </div>
+
+  <main class="content">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Tenant Manager</h1>
+        <p class="page-subtitle">View, add, and manage your property's tenants.</p>
+      </div>
+      <button class="btn btn-primary btn-primary-custom text-white" data-bs-toggle="modal" data-bs-target="#addTenantModal">
+        <i class="fa-solid fa-plus me-2"></i> Add Tenant
+      </button>
+    </div>
+
+    <div class="card-table">
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              <th>Tenant Name</th>
+              <th>ID Number</th>
+              <th>Phone</th>
+              <th>House</th>
+              <th>Rent Amount</th>
+              <th>Due Date</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tenantTableBody">
+             <tr>
+               <td colspan="7">
+                 <div class="loading-container">
+                    <i class="fa-solid fa-circle-notch fa-spin loading-spinner"></i>
+                    <p class="m-0 fw-medium">Loading your tenants...</p>
+                 </div>
+               </td>
+             </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade" id="addTenantModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title fw-bold text-dark">Add New Tenant</h5>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addTenantForm">
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="tName" class="form-control" placeholder="e.g. John Doe" required>
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="form-label">National ID</label>
+                    <input type="text" id="tNatID" class="form-control" placeholder="e.g. 12345678" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Phone Number</label>
+                    <input type="number" id="tPhone" class="form-control" placeholder="0712..." required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">House No.</label>
+                    <input type="text" id="tHouse" class="form-control" placeholder="A1" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Rent (KES)</label>
+                    <input type="number" id="tRent" class="form-control" placeholder="15000" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Due Day</label>
+                    <input type="number" id="tDate" class="form-control" placeholder="5" max="31" required>
+                </div>
+                
+                <div class="col-12 mt-4">
+                    <button type="submit" id="saveBtn" class="btn btn-primary-custom w-100 text-white py-2">Save Tenant</button>
+                </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBwJEOW3jVBHLizWiJjT4a_Tay-2yUCZwk",
+        authDomain: "rentpro-saas.firebaseapp.com",
+        projectId: "rentpro-saas",
+        storageBucket: "rentpro-saas.firebasestorage.app",
+        messagingSenderId: "120985965272",
+        appId: "1:120985965272:web:c86eae74aa75460b17fdad",
+        measurementId: "G-LJRKHT6ZTD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    let currentUserUID = null;
+
+    // YOUR GOOGLE SCRIPT URL
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
+
+    // 1. AUTH & INIT
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUserUID = user.uid;
+            loadTenants();
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+
+    // 2. LOAD TENANTS
+    async function loadTenants() {
+        try {
+            const res = await fetch(`${WEB_APP_URL}?action=getTenants&t=${new Date().getTime()}`);
+            const jsonResponse = await res.json();
+            const tenants = Array.isArray(jsonResponse) ? jsonResponse : jsonResponse.data;
+
+            const tbody = document.getElementById('tenantTableBody');
+            tbody.innerHTML = "";
+
+            const myTenants = tenants.filter(t => t.OwnerID === currentUserUID);
+
+            if(myTenants.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center p-5 text-muted fw-medium">No tenants found. Add your first one!</td></tr>`;
+                return;
+            }
+
+            myTenants.forEach(t => {
+                const initial = t.Name ? t.Name.charAt(0).toUpperCase() : '?';
+                const formattedRent = Number(t.Rent).toLocaleString();
+
+                tbody.innerHTML += `
+                    <tr class="tenant-row" onclick="window.location.href='tenant-profile.html?id=${t.ID}'">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-initial">${initial}</div>
+                                <span class="fw-semibold text-dark">${t.Name}</span>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-pill badge-id">${t.NationalID || 'N/A'}</span></td>
+                        <td class="text-muted">${t.PhoneNumber || t.Phone || '-'}</td> 
+                        <td><span class="badge badge-pill badge-house">${t.House || '-'}</span></td>
+                        <td class="fw-medium">KES ${formattedRent}</td>
+                        <td class="text-muted"><i class="fa-regular fa-calendar me-2"></i>Day ${t["Due Date"] || t.DueDate || '-'}</td>
+                        <td class="text-end">
+                           <button class="btn btn-sm btn-light border" onclick="event.stopPropagation(); window.deleteTenant('${t.ID}')">
+                             <i class="fa-solid fa-trash text-danger"></i>
+                           </button>
+                        </td>
+                    </tr>`;
+            });
+
+        } catch(e) {
+            console.error("Loading Error:", e);
+            document.getElementById('tenantTableBody').innerHTML = `
+                <tr><td colspan="7" class="text-danger text-center p-5">
+                    <i class="fa-solid fa-circle-exclamation mb-3 fs-3"></i><br>
+                    <strong>Error loading data.</strong><br>Check your internet connection.
+                </td></tr>`;
+        }
+    }
+
+    // 3. SAVE TENANT
+    document.getElementById('addTenantForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const btn = e.target.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+        
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+        btn.disabled = true;
+
+        const name = document.getElementById('tName').value;
+        const natID = document.getElementById('tNatID').value;
+        const phone = document.getElementById('tPhone').value;
+        const house = document.getElementById('tHouse').value;
+        const rent = document.getElementById('tRent').value;
+        const date = document.getElementById('tDate').value;
+
+        const params = new URLSearchParams({
+            action: "addTenant",
+            Name: name,
+            NationalID: natID,
+            PhoneNumber: phone,
+            House: house,
+            Rent: rent,
+            "Due Date": date,
+            OwnerID: currentUserUID
+        });
+
+        try {
+            await fetch(WEB_APP_URL, { method: "POST", body: params, mode: "no-cors" });
+            
+            setTimeout(() => {
+                alert("Tenant Saved!");
+                bootstrap.Modal.getInstance(document.getElementById('addTenantModal')).hide();
+                document.getElementById('addTenantForm').reset();
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                loadTenants();
+            }, 1500);
+
+        } catch (error) {
+            console.error("Save Error:", error);
+            alert("Error saving. Please check your connection.");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    });
+
+    // 4. DELETE FUNCTION
+    window.deleteTenant = async (id) => {
+        if(!confirm("Are you sure you want to delete this tenant? This cannot be undone.")) return;
+        document.body.style.cursor = "wait";
+
+        const params = new URLSearchParams({ action: "deleteTenant", id: id });
+
+        try {
+            await fetch(WEB_APP_URL, { method: "POST", body: params, mode: "no-cors" });
+            setTimeout(() => {
+                alert("Tenant Deleted!");
+                document.body.style.cursor = "default";
+                loadTenants();
+            }, 1500);
+        } catch (error) {
+            console.error(error);
+            alert("Error deleting tenant.");
+            document.body.style.cursor = "default";
+        }
+    };
+
+    document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+</script>
+</body>
+</html>
