@@ -108,6 +108,7 @@
     const auth = getAuth(app);
     let currentUserUID = null;
 
+    // Use your specific Script URL
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
 
     onAuthStateChanged(auth, (user) => {
@@ -119,12 +120,22 @@
         }
     });
 
-    // --- CURRENCY FORMATTER ---
     const money = (amount) => {
         return new Intl.NumberFormat('en-KE', { 
             style: 'currency', currency: 'KES', minimumFractionDigits: 0 
         }).format(amount).replace('KES', '').trim();
     };
+
+    // --- HELPER: Normalize Object Keys ---
+    // Converts "M-Pesa Name" -> "mpesaname", "Ref Code" -> "refcode" for easy matching
+    function normalizeData(item) {
+        const newItem = {};
+        Object.keys(item).forEach(key => {
+            const cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, ''); // Remove spaces/symbols
+            newItem[cleanKey] = item[key];
+        });
+        return newItem;
+    }
 
     window.loadPayments = async function() {
         const tbody = document.getElementById('paymentTableBody');
@@ -133,37 +144,52 @@
         try {
             const res = await fetch(`${WEB_APP_URL}?action=getPayments&t=${new Date().getTime()}`);
             const json = await res.json();
-            const allPayments = Array.isArray(json) ? json : (json.data || []);
+            const rawData = Array.isArray(json) ? json : (json.data || []);
 
-            // --- GLOBAL DEMO MODE: FILTER DISABLED ---
-            // const myPayments = allPayments.filter(p => p.OwnerID === currentUserUID);
-            const myPayments = allPayments; // Show ALL payments for demo
+            // DEBUG: Alert once to verify data arrival
+            if(rawData.length > 0 && !window.hasAlerted) {
+                console.log("First Payment Row:", rawData[0]); // Check console for exact keys
+                window.hasAlerted = true; 
+            }
 
-            // Sort Newest First
-            myPayments.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+            // Normalize every row so we don't worry about spaces/capitalization
+            const payments = rawData.map(normalizeData);
+
+            // Sort safely (dates can be tricky)
+            payments.sort((a, b) => {
+                const dateA = new Date(a.date || 0);
+                const dateB = new Date(b.date || 0);
+                return dateB - dateA;
+            });
 
             tbody.innerHTML = "";
 
-            if (myPayments.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-5 text-muted">No payments found in database.</td></tr>`;
+            if (payments.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-5 text-muted">No payments found in the connected Sheet.</td></tr>`;
                 return;
             }
 
-            myPayments.forEach(p => {
-                // 1. SAFE DATA EXTRACTION (Matches your Sheet Headers)
-                let dateDisplay = p.Date || '-';
-                try { dateDisplay = new Date(p.Date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' }); } catch(e){}
-
-                // Key Match: 'M-Pesa Name' OR 'TenantName' OR 'Name'
-                const name = p['M-Pesa Name'] || p.TenantName || p.Name || 'Unknown';
+            payments.forEach(p => {
+                // Now we access using the "clean" keys (lowercase, no spaces)
                 
-                // Key Match: 'Ref Code' OR 'Reference'
-                const ref = p['Ref Code'] || p.Reference || p.Ref || '-';
-                
-                // Key Match: 'Match Status'
-                const status = p['Match Status'] || 'Received';
+                // 1. DATE
+                let dateDisplay = p.date || '-';
+                try { 
+                    const d = new Date(p.date);
+                    if(!isNaN(d)) dateDisplay = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+                } catch(e){}
 
-                const amount = p.Amount || 0;
+                // 2. NAME (Looks for 'mpesaname' which matches "M-Pesa Name")
+                const name = p.mpesaname || p.tenantname || p.name || 'Unknown';
+                
+                // 3. REFERENCE (Looks for 'refcode' which matches "Ref Code")
+                const ref = p.refcode || p.reference || p.ref || '-';
+                
+                // 4. STATUS (Looks for 'matchstatus' which matches "Match Status")
+                const status = p.matchstatus || 'Received';
+
+                // 5. AMOUNT
+                const amount = p.amount || 0;
 
                 tbody.innerHTML += `
                     <tr>
@@ -177,7 +203,7 @@
 
         } catch(e) {
             console.error(e);
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger p-4">Error loading data. Check console.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger p-4">Error loading data. Check console (F12).</td></tr>`;
         }
     }
 
