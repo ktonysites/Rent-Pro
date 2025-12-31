@@ -14,15 +14,14 @@
       --rp-primary: #1d4ed8; 
       --rp-dark: #111827; 
       --rp-light: #f8fafc;
-      --sidebar-width: 220px;
+      --sidebar-width: 260px;
     }
 
     body { background: var(--rp-light); font-family: 'Inter', sans-serif; color: #334155; }
     
     /* SIDEBAR */
     .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--rp-dark); color: #fff; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; z-index: 1000; }
-    .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .nav-link { color: #94a3b8; padding: 12px 20px; display: flex; align-items: center; gap: 10px; text-decoration: none; transition: 0.2s; font-size: 0.9rem; }
+    .nav-link { color: #94a3b8; padding: 14px 24px; display: flex; align-items: center; gap: 12px; text-decoration: none; font-size: 0.9rem; }
     .nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
     .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #fff; border-right: 3px solid #3b82f6; }
     
@@ -32,25 +31,12 @@
     /* CARDS */
     .card-profile { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); height: 100%; }
     
-    /* AVATAR */
-    .avatar-lg { 
-      width: 80px; height: 80px; 
-      background: #eff6ff; color: var(--rp-primary); 
-      font-size: 2rem; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; 
-      border-radius: 50%; margin: 0 auto 15px auto; 
-    }
-
-    /* LABELS */
+    .avatar-lg { width: 80px; height: 80px; background: #eff6ff; color: var(--rp-primary); font-size: 2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 15px auto; }
     .label-text { font-size: 0.75rem; text-transform: uppercase; color: #64748b; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
     .value-text { font-size: 1rem; color: #0f172a; font-weight: 500; margin-bottom: 16px; }
-
-    /* STATS */
     .stat-box { background: #f8fafc; border-radius: 8px; padding: 15px; border: 1px solid #e2e8f0; text-align: center; }
     .stat-value { font-size: 1.25rem; font-weight: 700; color: #1e293b; }
     .stat-label { font-size: 0.75rem; color: #64748b; }
-
-    /* TABLE */
     .table thead th { background: #f8fafc; font-size: 0.75rem; text-transform: uppercase; color: #64748b; font-weight: 600; }
     .table td { vertical-align: middle; font-size: 0.9rem; }
 
@@ -60,116 +46,66 @@
 <body>
 
   <div class="sidebar">
-    <div class="sidebar-header"><h5 class="m-0 fw-bold"><i class="fa-solid fa-building me-2"></i> RentPro</h5></div>
+    <div style="padding:20px; border-bottom:1px solid #ffffff10;"><h5 class="m-0 fw-bold"><i class="fa-solid fa-building me-2"></i> RentPro</h5></div>
     <nav class="mt-2">
         <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
         <a href="tenants.html" class="nav-link active"><i class="fa-solid fa-users"></i> Tenants</a>
         <a href="payments.html" class="nav-link"><i class="fa-solid fa-money-bill-wave"></i> Payments</a>
-        <a href="pay-rent.html" class="nav-link"><i class="fa-regular fa-credit-card"></i> Pay Rent</a>
+        <a href="pay.html" class="nav-link"><i class="fa-solid fa-credit-card"></i> Pay Rent</a>
         <a href="expenses.html" class="nav-link"><i class="fa-solid fa-receipt"></i> Expenses</a>
         <a href="reports.html" class="nav-link"><i class="fa-solid fa-chart-simple"></i> Reports</a>
-        
-        <div class="mt-auto border-top border-secondary pt-2">
-           <a href="index.html" class="nav-link text-danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-        </div>
+        <div class="mt-auto border-top border-secondary pt-2"><a href="index.html" class="nav-link text-danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></div>
     </nav>
   </div>
 
   <main class="content">
-    
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <a href="tenants.html" class="text-decoration-none text-muted small fw-bold"><i class="fa-solid fa-arrow-left me-1"></i> Back to Tenants</a>
         <h2 class="fw-bold mt-1 text-dark" id="pHeaderName">Loading...</h2>
       </div>
-      
       <div class="d-flex gap-2">
-          <button class="btn btn-success btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#smsModal">
-            <i class="fa-solid fa-comment-sms me-2"></i> Message
-          </button>
-          
-          <button class="btn btn-outline-danger btn-sm" onclick="deleteTenant()">
-            <i class="fa-solid fa-trash me-2"></i> Delete
-          </button>
+          <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#smsModal"><i class="fa-solid fa-comment-sms me-2"></i> Message</button>
+          <button class="btn btn-outline-danger btn-sm" onclick="deleteTenant()"><i class="fa-solid fa-trash me-2"></i> Delete</button>
       </div>
     </div>
 
     <div id="loadingState" class="text-center py-5">
        <div class="spinner-border text-primary"></div>
-       <p class="mt-2 text-muted">Fetching profile...</p>
+       <p class="mt-2 text-muted">Searching database...</p>
     </div>
 
     <div class="row g-4" id="profileContent" style="display:none;">
-      
       <div class="col-lg-4">
         <div class="card-profile text-center">
           <div class="avatar-lg" id="pAvatar">?</div>
           <h4 class="fw-bold mb-1" id="pName">Unknown</h4>
           <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 mb-4">Active</span>
-          
           <div class="text-start border-top pt-4">
-             <div class="label-text">Phone Number</div>
-             <div class="value-text" id="pPhone">-</div>
-
-             <div class="label-text">National ID</div>
-             <div class="value-text" id="pNatID">-</div>
-
-             <div class="label-text">House / Unit</div>
-             <div class="value-text" id="pHouse">-</div>
-
-             <div class="label-text">Rent Amount</div>
-             <div class="value-text" id="pRent">-</div>
-
-             <div class="label-text">Next Due Date</div>
-             <div class="value-text mb-0" id="pDue">-</div>
+             <div class="label-text">Phone</div><div class="value-text" id="pPhone">-</div>
+             <div class="label-text">National ID</div><div class="value-text" id="pNatID">-</div>
+             <div class="label-text">Unit / House</div><div class="value-text" id="pHouse">-</div>
+             <div class="label-text">Rent</div><div class="value-text" id="pRent">-</div>
+             <div class="label-text">Due Date</div><div class="value-text mb-0" id="pDue">-</div>
           </div>
         </div>
       </div>
 
       <div class="col-lg-8">
-        
         <div class="row g-3 mb-4">
-           <div class="col-md-4">
-              <div class="stat-box">
-                 <div class="stat-label">Paid This Month</div>
-                 <div class="stat-value text-success" id="statPaid">0</div>
-              </div>
-           </div>
-           <div class="col-md-4">
-              <div class="stat-box">
-                 <div class="stat-label">Balance Due</div>
-                 <div class="stat-value text-danger" id="statBalance">0</div>
-              </div>
-           </div>
-           <div class="col-md-4">
-              <div class="stat-box">
-                 <div class="stat-label">Status</div>
-                 <div class="stat-value text-primary" id="statStatus">-</div>
-              </div>
-           </div>
+           <div class="col-md-4"><div class="stat-box"><div class="stat-label">Paid This Month</div><div class="stat-value text-success" id="statPaid">0</div></div></div>
+           <div class="col-md-4"><div class="stat-box"><div class="stat-label">Balance</div><div class="stat-value text-danger" id="statBalance">0</div></div></div>
+           <div class="col-md-4"><div class="stat-box"><div class="stat-label">Status</div><div class="stat-value text-primary" id="statStatus">-</div></div></div>
         </div>
-
         <div class="card-profile p-0 overflow-hidden">
-           <div class="p-3 border-bottom bg-light d-flex justify-content-between align-items-center">
-              <h6 class="fw-bold m-0">Payment History</h6>
-              <a href="pay-rent.html" class="btn btn-primary btn-sm" style="font-size: 0.75rem;">Record Payment</a>
-           </div>
+           <div class="p-3 border-bottom bg-light fw-bold">Payment History</div>
            <div class="table-responsive">
               <table class="table table-hover mb-0">
-                 <thead>
-                    <tr>
-                       <th>Date</th>
-                       <th>Method</th>
-                       <th class="text-end">Amount</th>
-                    </tr>
-                 </thead>
-                 <tbody id="historyBody">
-                    <tr><td colspan="3" class="text-center p-3 text-muted">No payments found.</td></tr>
-                 </tbody>
+                 <thead><tr><th>Date</th><th>Method</th><th class="text-end">Amount</th></tr></thead>
+                 <tbody id="historyBody"></tbody>
               </table>
            </div>
         </div>
-
       </div>
     </div>
   </main>
@@ -178,17 +114,17 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title fw-bold"><i class="fa-solid fa-comment-sms text-success me-2"></i>Send Message</h5>
+            <h5 class="modal-title fw-bold"><i class="fa-solid fa-comment-sms text-success me-2"></i> Send Message</h5>
             <button class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
             <div class="mb-3">
-                <label class="form-label text-muted small fw-bold">RECIPIENT</label>
+                <label class="form-label small fw-bold text-muted">RECIPIENT</label>
                 <input type="text" id="smsRecipient" class="form-control bg-light" readonly>
             </div>
             
             <div class="mb-3">
-                <label class="form-label text-muted small fw-bold">QUICK TEMPLATES</label>
+                <label class="form-label small fw-bold text-muted">QUICK TEMPLATES</label>
                 <select id="smsTemplate" class="form-select border-success">
                     <option value="" selected>Choose a template...</option>
                     <option value="reminder">📅 Friendly Reminder (Upcoming)</option>
@@ -199,8 +135,8 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label text-muted small fw-bold">MESSAGE BODY</label>
-                <textarea id="smsBody" class="form-control" rows="5" placeholder="Select a template or type your message..."></textarea>
+                <label class="form-label small fw-bold text-muted">MESSAGE BODY</label>
+                <textarea id="smsBody" class="form-control" rows="5" placeholder="Type your message here..."></textarea>
             </div>
             
             <button class="btn btn-success w-100 fw-bold" onclick="sendSMS()">
@@ -229,78 +165,111 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     let currentUserUID = null;
-    let currentTenantID = null;
+    let targetID = null;
     
-    // Store tenant data globally to use in templates
+    // Store data globally for SMS templates
     let tenantData = { name: "", phone: "", rent: 0, due: "", balance: 0 };
+
+    const params = new URLSearchParams(window.location.search);
+    targetID = params.get('id');
+    if (targetID) targetID = decodeURIComponent(targetID).trim(); 
 
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsWx1USYqSBOGLttP8GibfJdSfRLu9bDGSGiuOGj1TuI88gH7nTXJTZqy0Iwd3oMg2_w/exec"; 
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUserUID = user.uid;
-            const params = new URLSearchParams(window.location.search);
-            currentTenantID = params.get('id');
-            if(currentTenantID) loadProfile();
-            else window.location.href = 'tenants.html';
+            if(targetID) loadProfile();
+            else { alert("No Tenant Selected"); window.location.href = 'tenants.html'; }
         } else {
             window.location.href = "index.html";
         }
     });
 
+    // Helper: Normalize Data 
+    function normalize(obj) {
+        const newObj = {};
+        Object.keys(obj).forEach(k => {
+            newObj[k.toLowerCase().replace(/[^a-z0-9]/g, '')] = obj[k];
+        });
+        return newObj;
+    }
+
     async function loadProfile() {
         try {
             const [tenantsRes, paymentsRes] = await Promise.all([
-                fetch(`${WEB_APP_URL}?action=getTenants&t=${Date.now()}`).then(r => r.json()),
-                fetch(`${WEB_APP_URL}?action=getPayments&t=${Date.now()}`).then(r => r.json())
+                fetch(`${WEB_APP_URL}?action=getTenants`).then(r => r.json()),
+                fetch(`${WEB_APP_URL}?action=getPayments`).then(r => r.json())
             ]);
 
-            const allTenants = Array.isArray(tenantsRes) ? tenantsRes : tenantsRes.data;
-            const allPayments = Array.isArray(paymentsRes) ? paymentsRes : paymentsRes.data;
-            const tenant = allTenants.find(t => String(t.ID) === String(currentTenantID));
+            const rawTenants = Array.isArray(tenantsRes) ? tenantsRes : (tenantsRes.data || []);
+            const allPayments = Array.isArray(paymentsRes) ? paymentsRes : (paymentsRes.data || []);
 
-            if (!tenant) return;
+            const tenants = rawTenants.map(t => normalize(t));
 
-            renderTenantDetails(tenant);
-            renderPaymentStats(tenant, allPayments);
+            // FIND MATCH
+            const tenant = tenants.find(t => {
+                const tName = t.name || t.tenantname || '';
+                const tId = t.id || '';
+                return String(tId) === String(targetID) || String(tName).toLowerCase() === String(targetID).toLowerCase();
+            });
+
+            if (!tenant) {
+                document.getElementById('loadingState').innerHTML = `<div class="text-danger p-5"><h4>Tenant Not Found</h4><p>Could not find "${targetID}".</p><a href="tenants.html" class="btn btn-secondary">Go Back</a></div>`;
+                return;
+            }
+
+            // POPULATE GLOBAL DATA
+            tenantData.name = tenant.name || tenant.tenantname || 'Unknown';
+            tenantData.phone = tenant.phone || tenant.phonenumber || tenant.contact || '';
+            tenantData.rent = Number(tenant.rent || tenant.amount || 0);
+            tenantData.due = tenant.duedate || tenant.date || '5th';
+
+            // POPULATE UI
+            document.getElementById('pHeaderName').innerText = tenantData.name;
+            document.getElementById('pName').innerText = tenantData.name;
+            document.getElementById('pAvatar').innerText = tenantData.name.charAt(0).toUpperCase();
+            
+            document.getElementById('pPhone').innerText = tenantData.phone || '-';
+            document.getElementById('pNatID').innerText = tenant.nationalid || tenant.idnumber || 'N/A';
+            document.getElementById('pHouse').innerText = tenant.house || tenant.unit || 'N/A';
+            document.getElementById('pRent').innerText = "KES " + tenantData.rent.toLocaleString();
+            document.getElementById('pDue').innerText = "Day " + tenantData.due;
+
+            document.getElementById('smsRecipient').value = `${tenantData.name} (${tenantData.phone})`;
+
+            // FILTER PAYMENTS
+            const myPayments = allPayments.filter(p => {
+                const pNorm = normalize(p);
+                const pName = pNorm.mpesaname || pNorm.tenantname || pNorm.name || '';
+                return pName.toLowerCase().includes(tenantData.name.toLowerCase());
+            });
+
+            renderPayments(myPayments, tenantData.rent);
 
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('profileContent').style.display = 'flex';
 
-        } catch (e) {
+        } catch(e) {
             console.error(e);
             alert("Error loading profile.");
         }
     }
 
-    function renderTenantDetails(t) {
-        tenantData.name = t.Name || 'Tenant';
-        tenantData.phone = t.PhoneNumber || t.Phone || '';
-        tenantData.rent = Number(t.Rent || 0);
-        tenantData.due = t["Due Date"] || t.DueDate || '5th';
-
-        document.getElementById('smsRecipient').value = `${tenantData.name} (${tenantData.phone})`;
-        document.getElementById('pHeaderName').innerText = tenantData.name;
-        document.getElementById('pName').innerText = tenantData.name;
-        document.getElementById('pAvatar').innerText = tenantData.name.charAt(0).toUpperCase();
-        document.getElementById('pPhone').innerText = tenantData.phone;
-        document.getElementById('pNatID').innerText = t.NationalID || '-';
-        document.getElementById('pHouse').innerText = t.House || '-';
-        document.getElementById('pRent').innerText = "KES " + tenantData.rent.toLocaleString();
-        document.getElementById('pDue').innerText = "Day " + tenantData.due;
-    }
-
-    function renderPaymentStats(tenant, payments) {
-        const tenantPayments = payments.filter(p => (p.Name && p.Name === tenant.Name) || (p.TenantID && String(p.TenantID) === String(tenant.ID)));
-        tenantPayments.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+    function renderPayments(payments, monthlyRent) {
+        payments.sort((a, b) => new Date(b.Date || b.date) - new Date(a.Date || a.date));
 
         const now = new Date();
-        const paidThisMonth = tenantPayments.reduce((sum, p) => {
-            const pDate = new Date(p.Date);
-            return (pDate.getMonth() === now.getMonth() && pDate.getFullYear() === now.getFullYear()) ? sum + Number(p.Amount) : sum;
+        const paidThisMonth = payments.reduce((sum, p) => {
+            const pNorm = normalize(p);
+            const d = new Date(pNorm.date);
+            if(d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+                return sum + Number(pNorm.amount || 0);
+            }
+            return sum;
         }, 0);
 
-        tenantData.balance = tenantData.rent - paidThisMonth;
+        tenantData.balance = monthlyRent - paidThisMonth;
 
         document.getElementById('statPaid').innerText = "KES " + paidThisMonth.toLocaleString();
         const balEl = document.getElementById('statBalance');
@@ -317,36 +286,45 @@
 
         const tbody = document.getElementById('historyBody');
         tbody.innerHTML = "";
-        if(tenantPayments.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" class="text-center p-3 text-muted">No payments recorded.</td></tr>';
-            return;
+        
+        if(payments.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center p-3 text-muted">No payments found.</td></tr>';
+        } else {
+            payments.forEach(p => {
+                const pNorm = normalize(p);
+                let dStr = pNorm.date || '-';
+                try { dStr = new Date(pNorm.date).toLocaleDateString(); } catch(e){}
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="text-muted small">${dStr}</td>
+                        <td><span class="badge bg-light text-dark border">M-Pesa</span></td>
+                        <td class="text-end fw-bold text-success">+${Number(pNorm.amount).toLocaleString()}</td>
+                    </tr>`;
+            });
         }
-
-        tenantPayments.forEach(p => {
-            let dateStr = p.Date;
-            try { dateStr = new Date(p.Date).toLocaleDateString(); } catch(e){}
-            tbody.innerHTML += `<tr><td class="text-muted small">${dateStr}</td><td><span class="badge bg-light text-dark border">${p.Method || 'Cash'}</span></td><td class="text-end fw-bold text-success">+${Number(p.Amount).toLocaleString()}</td></tr>`;
-        });
     }
 
-    // --- TEMPLATE LOGIC ---
+    // --- TEMPLATE LOGIC UPDATED WITH CURRENT MONTH ---
     document.getElementById('smsTemplate').addEventListener('change', function() {
         const type = this.value;
         const textArea = document.getElementById('smsBody');
         const firstName = tenantData.name.split(' ')[0];
         const rentFmt = tenantData.rent.toLocaleString();
         const balFmt = tenantData.balance > 0 ? tenantData.balance.toLocaleString() : "0";
+        
+        // GET CURRENT MONTH NAME
+        const currentMonth = new Date().toLocaleString('default', { month: 'long' });
 
         let text = "";
-
         if (type === "reminder") {
-            text = `Hi ${firstName}! Just a friendly reminder that your rent of KES ${rentFmt} is due on Day ${tenantData.due}. 🏠 Let's keep your home sweet home secure!`;
+            text = `Hi ${firstName}! Just a friendly reminder that ${currentMonth} rent of KES ${rentFmt} is due on Day ${tenantData.due}. 🏠 Let's keep your home secure!`;
         } else if (type === "today") {
-            text = `Hello ${firstName}, this is a reminder that rent (KES ${rentFmt}) is due TODAY. Please make your payment to avoid any inconvenience. Thanks!`;
+            text = `Hello ${firstName}, this is a reminder that ${currentMonth} rent (KES ${rentFmt}) is due TODAY. Please make your payment to avoid any inconvenience.`;
         } else if (type === "overdue") {
-            text = `Hi ${firstName}, we haven't received your rent yet. You have a pending balance of KES ${balFmt}. Please clear this as soon as possible. Thank you.`;
+            text = `Hi ${firstName}, we haven't received your ${currentMonth} rent yet. You have a pending balance of KES ${balFmt}. Please clear this as soon as possible.`;
         } else if (type === "received") {
-            text = `Hi ${firstName}, we've received your payment. Thank you for paying on time! Have a great month ahead. ✅`;
+            text = `Hi ${firstName}, we've received your payment for ${currentMonth}. Thank you for paying on time! Have a great month ahead. ✅`;
         }
 
         if(text) textArea.value = text;
@@ -359,7 +337,7 @@
         if(!message) return alert("Please type a message");
         if(!tenantData.phone) return alert("Tenant has no phone number");
 
-        btn.innerHTML = 'Sending...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
         btn.disabled = true;
 
         const params = new URLSearchParams({ action: "sendMessage", phone: tenantData.phone, message: message });
@@ -382,13 +360,15 @@
     window.deleteTenant = async () => {
         if(!confirm("Delete this tenant permanently?")) return;
         document.body.style.cursor = "wait";
+        // Assuming we delete by name if ID is missing in sheet
+        const deleteId = targetID; 
         try {
-            await fetch(WEB_APP_URL, { method: "POST", body: new URLSearchParams({ action: "deleteTenant", id: currentTenantID }), mode: "no-cors" });
+            await fetch(WEB_APP_URL, { method: "POST", body: new URLSearchParams({ action: "deleteTenant", id: deleteId }), mode: "no-cors" });
             setTimeout(() => { alert("Tenant deleted."); window.location.href = "tenants.html"; }, 1500);
         } catch(e) { alert("Error deleting."); document.body.style.cursor = "default"; }
     };
 
-    document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+    if(document.getElementById('logoutBtn')) document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 </script>
 </body>
 </html>
